@@ -11,12 +11,10 @@ For safety in our demo, we use fruits such as bananas and cucumbers as mock weap
 Traditional security camera systems often record video passively or rely on cloud-based processing. This can create problems such as:
 
 - slower response times
-- high bandwidth usage
-- privacy concerns from sending raw video to the cloud
 - single points of failure
 - delayed alerts during emergencies
 
-ThreatSense addresses these issues by moving the most time-sensitive detection work closer to where the data is generated. The edge device performs real-time object detection locally and only sends alert information when a potential threat-like object is detected.
+ThreatSense addresses these issues by performing real-time object detection locally and only sends alert information when a potential threat-like object is detected.
 
 ## Use Case
 
@@ -30,32 +28,9 @@ This system is designed for security and public safety environments such as:
 
 In a real emergency, response time is very important. ThreatSense is meant to demonstrate how edge and fog computing can be used to detect potential threats faster and organize alerts more efficiently.
 
-## System Architecture
+## System Design
 
-ThreatSense is designed using three main layers:
-
-### Edge Layer
-
-The edge layer is responsible for real-time detection.
-
-In our demo, the edge device is a Jetson Nano connected to a camera. It captures a live video feed and runs a lightweight object detection model locally. When a mock threat object is detected, the edge device generates an alert containing:
-
-- detected object type
-- confidence score
-- timestamp
-- captured frame
-
-### Fog Layer
-
-The fog layer is responsible for receiving and organizing alerts.
-
-In our demo, this layer is implemented using a laptop or lab computer. It receives alerts from the Jetson Nano, displays the results in real time, and helps organize incoming detection data. This layer also represents how the system could scale to support multiple edge devices in a larger deployment.
-
-### Cloud Layer
-
-The cloud layer is planned as a future extension.
-
-It would store long-term detection logs and metadata for analysis, monitoring, and future system improvements.
+![ThreatSense System Design](assets/ThreatSense_SysDesign.png)
 
 ## Demo Description
 
