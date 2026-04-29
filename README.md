@@ -32,14 +32,6 @@ In a real emergency, response time is very important. ThreatSense is meant to de
 
 ![ThreatSense System Design](assets/ThreatSense_SysDesign.png)
 
-## Demo Description
-
-For the proof-of-concept demo, ThreatSense will use a Jetson Nano as the edge device and a laptop or lab computer as the fog device.
-
-The Jetson Nano will run a lightweight YOLOv8-N object detection model optimized with TensorRT. The model will process a live video feed and detect mock threat objects such as bananas and cucumbers.
-
-When an object is detected, the Jetson Nano will send an alert to the fog device. The fog device will display the detection result and log the event.
-
 ## Technologies Used
 
 - Jetson Nano
@@ -60,7 +52,6 @@ When an object is detected, the Jetson Nano will send an alert to the fog device
 - Communication between edge and fog devices
 - Real-time alert display
 - Detection logging for future analysis
-- Scalable design for multiple edge devices
 
 ## Project Goals
 
@@ -69,19 +60,8 @@ The main goals of this project are to:
 - demonstrate edge-based AI detection
 - reduce reliance on cloud processing
 - improve alert response time
-- reduce unnecessary bandwidth usage
 - create a scalable distributed system design
 - safely simulate threat detection using harmless objects
-
-## Expected Challenges
-
-Some challenges we expect include:
-
-- running real-time detection on limited Jetson Nano hardware
-- reducing false positives
-- sending alerts between devices with low delay
-- organizing detection results clearly on the fog device
-- optimizing the object detection model for performance
 
 ## Team Members
 
@@ -92,19 +72,3 @@ Thursday Project Group 2 - ThreatSense
 - Ryan Pinto
 - Adolfo Magallanes
 - Moses Avila
-
-## Future Improvements
-
-Possible future improvements include:
-
-- adding support for multiple edge devices
-- improving the false positive filtering system
-- adding a cloud database for long-term storage
-- creating a dashboard for detection history
-- adding notification support through email, SMS, or mobile alerts
-- training the model on a larger dataset
-- improving real-time performance with further model optimization
-
-## Repository Status
-
-This repository is part of our CS 131 project proof-of-concept demo. The current focus is on building the edge-to-fog detection pipeline and demonstrating real-time alert generation.
