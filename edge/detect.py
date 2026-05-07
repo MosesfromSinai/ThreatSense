@@ -1,22 +1,24 @@
 import cv2
+import time
 from ultralytics import YOLO
 
-# Load YOLOv8 nano model.
-# The first time you run this, it may automatically download yolov8n.pt.
 model = YOLO("yolov8n.pt")
 
-# Safe demo objects that we will treat as mock threats.
-# Pretrained YOLOv8 can detect "banana".
-# Cucumber is not usually a built-in YOLO class, so we can add it later after custom training.
 MOCK_THREAT_MAP = {
     "banana": "mock_gun_threat"
 }
 
-CONFIDENCE_THRESHOLD = 0.40
+CONFIDENCE_THRESHOLD = 0.30
+
+# Keeps the box on screen briefly even if YOLO misses a frame
+DETECTION_MEMORY_SECONDS = 1.0
+last_detection = None
+last_detection_time = 0
 
 
 def main():
-    # MacBook camera backend
+    global last_detection, last_detection_time
+
     camera = cv2.VideoCapture(0, cv2.CAP_AVFOUNDATION)
 
     if not camera.isOpened():
@@ -32,8 +34,10 @@ def main():
             print("Error: could not read frame")
             break
 
-        # Run YOLO detection on the current frame
         results = model(frame, verbose=False)
+        current_time = time.time()
+
+        detection_found = False
 
         for result in results:
             for box in result.boxes:
@@ -41,37 +45,48 @@ def main():
                 confidence = float(box.conf[0])
                 detected_object = model.names[class_id]
 
-                # Check if detected object is one of our safe mock threat objects
                 if detected_object in MOCK_THREAT_MAP and confidence >= CONFIDENCE_THRESHOLD:
                     mock_threat_label = MOCK_THREAT_MAP[detected_object]
 
-                    # Get bounding box coordinates
                     x1, y1, x2, y2 = box.xyxy[0].cpu().numpy().astype(int)
 
-                    # Draw bounding box
-                    cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                    last_detection = {
+                        "label": mock_threat_label,
+                        "object": detected_object,
+                        "confidence": confidence,
+                        "box": (x1, y1, x2, y2)
+                    }
 
-                    # Display mock threat label instead of banana
-                    label_text = f"{mock_threat_label}: {confidence:.2f}"
-
-                    cv2.putText(
-                        frame,
-                        label_text,
-                        (x1, y1 - 10),
-                        cv2.FONT_HERSHEY_SIMPLEX,
-                        0.6,
-                        (0, 255, 0),
-                        2,
-                    )
+                    last_detection_time = current_time
+                    detection_found = True
 
                     print(
                         f"Detected {detected_object} as {mock_threat_label} "
                         f"with confidence {confidence:.2f}"
                     )
 
+        # Draw the most recent detection for a short time
+        if last_detection and current_time - last_detection_time <= DETECTION_MEMORY_SECONDS:
+            x1, y1, x2, y2 = last_detection["box"]
+            label = last_detection["label"]
+            confidence = last_detection["confidence"]
+
+            cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+
+            label_text = f"{label}: {confidence:.2f}"
+
+            cv2.putText(
+                frame,
+                label_text,
+                (x1, y1 - 10),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.6,
+                (0, 255, 0),
+                2,
+            )
+
         cv2.imshow("ThreatSense Mock Threat Detection", frame)
 
-        # Press q to quit
         if cv2.waitKey(1) & 0xFF == ord("q"):
             break
 
