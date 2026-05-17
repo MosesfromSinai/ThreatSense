@@ -11,6 +11,18 @@ from config import (
 )
 
 
+def build_alert_payload(detected_object, threat_label, confidence, box):
+    return {
+        "device_id": DEVICE_ID,
+        "camera_id": CAMERA_ID,
+        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "object": detected_object,
+        "threat_label": threat_label,
+        "confidence": round(confidence, 2),
+        "box": list(box),
+    }
+
+
 def send_alert(alert_payload):
     for attempt in range(ALERT_RETRY_COUNT):
         try:
