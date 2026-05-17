@@ -1,6 +1,8 @@
+from datetime import datetime
+
 import requests
 
-from config import FOG_SERVER_URL, REQUEST_TIMEOUT_SECONDS
+from config import CAMERA_ID, DEVICE_ID, FOG_SERVER_URL, REQUEST_TIMEOUT_SECONDS
 
 
 def send_alert(alert_payload):
@@ -23,3 +25,17 @@ def send_alert(alert_payload):
 
     print("Alert was not sent to fog server")
     return False
+
+
+if __name__ == "__main__":
+    test_alert = {
+        "device_id": DEVICE_ID,
+        "camera_id": CAMERA_ID,
+        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "object": "banana",
+        "threat_label": "mock_gun_threat",
+        "confidence": 0.95,
+        "box": [100, 100, 300, 300],
+    }
+
+    send_alert(test_alert)
