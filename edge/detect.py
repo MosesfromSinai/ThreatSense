@@ -81,8 +81,8 @@ def main():
                             "box": [x1, y1, x2, y2],
                         }
 
-                        send_alert(alert_payload)
-                        last_alert_time = current_time
+                        if send_alert(alert_payload):
+                            last_alert_time = current_time
 
         # Draw the most recent detection for a short time
         if last_detection and current_time - last_detection_time <= DETECTION_MEMORY_SECONDS:
