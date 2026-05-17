@@ -7,6 +7,7 @@ from config import (
     ALERT_COOLDOWN_SECONDS,
     CAMERA_ID,
     DEVICE_ID,
+    FOG_SERVER_URL,
     MOCK_THREAT_CLASSES,
 )
 
@@ -31,6 +32,8 @@ def main():
         return
 
     print("ThreatSense YOLO detection started. Press q to quit.")
+    print(f"Device ID: {DEVICE_ID}")
+    print(f"Sending alerts to: {FOG_SERVER_URL}")
 
     while True:
         ret, frame = camera.read()
