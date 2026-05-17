@@ -2,11 +2,17 @@ from datetime import datetime
 
 import requests
 
-from config import CAMERA_ID, DEVICE_ID, FOG_SERVER_URL, REQUEST_TIMEOUT_SECONDS
+from config import (
+    ALERT_RETRY_COUNT,
+    CAMERA_ID,
+    DEVICE_ID,
+    FOG_SERVER_URL,
+    REQUEST_TIMEOUT_SECONDS,
+)
 
 
 def send_alert(alert_payload):
-    for attempt in range(2):
+    for attempt in range(ALERT_RETRY_COUNT):
         try:
             response = requests.post(
                 FOG_SERVER_URL,
