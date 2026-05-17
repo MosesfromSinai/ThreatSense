@@ -2,11 +2,9 @@ import cv2
 import time
 from ultralytics import YOLO
 
-model = YOLO("yolov8n.pt")
+from config import CAMERA_ID, MOCK_THREAT_CLASSES
 
-MOCK_THREAT_MAP = {
-    "banana": "mock_gun_threat"
-}
+model = YOLO("yolov8n.pt")
 
 CONFIDENCE_THRESHOLD = 0.30
 
@@ -19,7 +17,7 @@ last_detection_time = 0
 def main():
     global last_detection, last_detection_time
 
-    camera = cv2.VideoCapture(0, cv2.CAP_AVFOUNDATION)
+    camera = cv2.VideoCapture(CAMERA_ID, cv2.CAP_AVFOUNDATION)
 
     if not camera.isOpened():
         print("Error: could not open webcam")
@@ -45,8 +43,8 @@ def main():
                 confidence = float(box.conf[0])
                 detected_object = model.names[class_id]
 
-                if detected_object in MOCK_THREAT_MAP and confidence >= CONFIDENCE_THRESHOLD:
-                    mock_threat_label = MOCK_THREAT_MAP[detected_object]
+                if detected_object in MOCK_THREAT_CLASSES and confidence >= CONFIDENCE_THRESHOLD:
+                    mock_threat_label = MOCK_THREAT_CLASSES[detected_object]
 
                     x1, y1, x2, y2 = box.xyxy[0].cpu().numpy().astype(int)
 
