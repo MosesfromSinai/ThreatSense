@@ -14,7 +14,7 @@ def send_alert(alert_payload):
                 timeout=REQUEST_TIMEOUT_SECONDS,
             )
 
-            if response.status_code == 200:
+            if 200 <= response.status_code < 300:
                 print("Alert sent to fog server")
                 return True
 
