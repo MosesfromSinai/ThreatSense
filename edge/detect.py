@@ -2,7 +2,7 @@ import cv2
 import time
 from ultralytics import YOLO
 
-from alert_sender import send_alert
+from alert_sender import build_alert_payload, send_alert
 from config import (
     ALERT_COOLDOWN_SECONDS,
     CAMERA_ID,
@@ -74,15 +74,12 @@ def main():
                     )
 
                     if current_time - last_alert_time >= ALERT_COOLDOWN_SECONDS:
-                        alert_payload = {
-                            "device_id": DEVICE_ID,
-                            "camera_id": CAMERA_ID,
-                            "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
-                            "object": detected_object,
-                            "threat_label": mock_threat_label,
-                            "confidence": round(confidence, 2),
-                            "box": [x1, y1, x2, y2],
-                        }
+                        alert_payload = build_alert_payload(
+                            detected_object,
+                            mock_threat_label,
+                            confidence,
+                            (x1, y1, x2, y2),
+                        )
 
                         if send_alert(alert_payload):
                             last_alert_time = current_time
