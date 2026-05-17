@@ -46,14 +46,11 @@ def send_alert(alert_payload):
 
 
 if __name__ == "__main__":
-    test_alert = {
-        "device_id": DEVICE_ID,
-        "camera_id": CAMERA_ID,
-        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "object": "banana",
-        "threat_label": "mock_gun_threat",
-        "confidence": 0.95,
-        "box": [100, 100, 300, 300],
-    }
+    test_alert = build_alert_payload(
+        "banana",
+        "mock_gun_threat",
+        0.95,
+        (100, 100, 300, 300),
+    )
 
     send_alert(test_alert)
