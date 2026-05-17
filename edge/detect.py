@@ -2,7 +2,13 @@ import cv2
 import time
 from ultralytics import YOLO
 
-from config import CAMERA_ID, MOCK_THREAT_CLASSES
+from alert_sender import send_alert
+from config import (
+    ALERT_COOLDOWN_SECONDS,
+    CAMERA_ID,
+    DEVICE_ID,
+    MOCK_THREAT_CLASSES,
+)
 
 model = YOLO("yolov8n.pt")
 
@@ -12,10 +18,11 @@ CONFIDENCE_THRESHOLD = 0.30
 DETECTION_MEMORY_SECONDS = 1.0
 last_detection = None
 last_detection_time = 0
+last_alert_time = 0
 
 
 def main():
-    global last_detection, last_detection_time
+    global last_detection, last_detection_time, last_alert_time
 
     camera = cv2.VideoCapture(CAMERA_ID, cv2.CAP_AVFOUNDATION)
 
@@ -62,6 +69,20 @@ def main():
                         f"Detected {detected_object} as {mock_threat_label} "
                         f"with confidence {confidence:.2f}"
                     )
+
+                    if current_time - last_alert_time >= ALERT_COOLDOWN_SECONDS:
+                        alert_payload = {
+                            "device_id": DEVICE_ID,
+                            "camera_id": CAMERA_ID,
+                            "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+                            "object": detected_object,
+                            "threat_label": mock_threat_label,
+                            "confidence": round(confidence, 2),
+                            "box": [x1, y1, x2, y2],
+                        }
+
+                        send_alert(alert_payload)
+                        last_alert_time = current_time
 
         # Draw the most recent detection for a short time
         if last_detection and current_time - last_detection_time <= DETECTION_MEMORY_SECONDS:
