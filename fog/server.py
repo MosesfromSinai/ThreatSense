@@ -58,6 +58,14 @@ def list_alerts():
     }), 200
 
 
+@app.route("/health", methods=["GET"])
+def health_check():
+    return jsonify({
+        "status": "running",
+        "alert_count": len(alerts),
+    }), 200
+
+
 @app.route("/", methods=["GET"])
 def dashboard():
     rows = []
