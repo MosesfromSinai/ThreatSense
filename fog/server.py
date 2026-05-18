@@ -38,10 +38,15 @@ def receive_alert():
 
     missing_fields = get_missing_fields(alert)
     if missing_fields:
-        return jsonify({
-            "error": "missing required alert fields",
-            "missing_fields": missing_fields,
-        }), 400
+        return (
+            jsonify(
+                {
+                    "error": "missing required alert fields",
+                    "missing_fields": missing_fields,
+                }
+            ),
+            400,
+        )
 
     alerts.append(alert)
     log_alert(alert)
@@ -52,18 +57,28 @@ def receive_alert():
 
 @app.route("/alerts", methods=["GET"])
 def list_alerts():
-    return jsonify({
-        "count": len(alerts),
-        "alerts": alerts,
-    }), 200
+    return (
+        jsonify(
+            {
+                "count": len(alerts),
+                "alerts": alerts,
+            }
+        ),
+        200,
+    )
 
 
 @app.route("/health", methods=["GET"])
 def health_check():
-    return jsonify({
-        "status": "running",
-        "alert_count": len(alerts),
-    }), 200
+    return (
+        jsonify(
+            {
+                "status": "running",
+                "alert_count": len(alerts),
+            }
+        ),
+        200,
+    )
 
 
 @app.route("/devices", methods=["GET"])
@@ -73,10 +88,15 @@ def list_devices():
         device_id = alert.get("device_id", "unknown")
         device_counts[device_id] = device_counts.get(device_id, 0) + 1
 
-    return jsonify({
-        "count": len(device_counts),
-        "devices": device_counts,
-    }), 200
+    return (
+        jsonify(
+            {
+                "count": len(device_counts),
+                "devices": device_counts,
+            }
+        ),
+        200,
+    )
 
 
 @app.route("/", methods=["GET"])

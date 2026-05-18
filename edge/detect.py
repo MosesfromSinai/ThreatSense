@@ -53,7 +53,10 @@ def main():
                 confidence = float(box.conf[0])
                 detected_object = model.names[class_id]
 
-                if detected_object in MOCK_THREAT_CLASSES and confidence >= CONFIDENCE_THRESHOLD:
+                if (
+                    detected_object in MOCK_THREAT_CLASSES
+                    and confidence >= CONFIDENCE_THRESHOLD
+                ):
                     mock_threat_label = MOCK_THREAT_CLASSES[detected_object]
 
                     x1, y1, x2, y2 = box.xyxy[0].cpu().numpy().astype(int)
@@ -62,7 +65,7 @@ def main():
                         "label": mock_threat_label,
                         "object": detected_object,
                         "confidence": confidence,
-                        "box": (x1, y1, x2, y2)
+                        "box": (x1, y1, x2, y2),
                     }
 
                     last_detection_time = current_time
@@ -85,7 +88,10 @@ def main():
                             last_alert_time = current_time
 
         # Draw the most recent detection for a short time
-        if last_detection and current_time - last_detection_time <= DETECTION_MEMORY_SECONDS:
+        if (
+            last_detection
+            and current_time - last_detection_time <= DETECTION_MEMORY_SECONDS
+        ):
             x1, y1, x2, y2 = last_detection["box"]
             label = last_detection["label"]
             confidence = last_detection["confidence"]
