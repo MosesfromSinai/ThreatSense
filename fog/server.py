@@ -1,4 +1,5 @@
 import json
+from html import escape
 from pathlib import Path
 
 from flask import Flask, jsonify, request
@@ -55,6 +56,27 @@ def list_alerts():
         "count": len(alerts),
         "alerts": alerts,
     }), 200
+
+
+@app.route("/", methods=["GET"])
+def dashboard():
+    rows = []
+    for alert in reversed(alerts[-10:]):
+        timestamp = escape(str(alert.get("timestamp", "unknown")))
+        device = escape(str(alert.get("device_id", "unknown")))
+        label = escape(str(alert.get("threat_label", "unknown")))
+        confidence = escape(str(alert.get("confidence", "unknown")))
+        rows.append(f"<li>{timestamp} - {device} - {label} ({confidence})</li>")
+
+    if not rows:
+        rows.append("<li>No alerts received yet.</li>")
+
+    return f"""
+    <meta http-equiv="refresh" content="3">
+    <h1>ThreatSense Fog Dashboard</h1>
+    <p>Total alerts: {len(alerts)}</p>
+    <ul>{''.join(rows)}</ul>
+    """
 
 
 if __name__ == "__main__":
