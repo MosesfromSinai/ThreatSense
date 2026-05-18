@@ -66,6 +66,19 @@ def health_check():
     }), 200
 
 
+@app.route("/devices", methods=["GET"])
+def list_devices():
+    device_counts = {}
+    for alert in alerts:
+        device_id = alert.get("device_id", "unknown")
+        device_counts[device_id] = device_counts.get(device_id, 0) + 1
+
+    return jsonify({
+        "count": len(device_counts),
+        "devices": device_counts,
+    }), 200
+
+
 @app.route("/", methods=["GET"])
 def dashboard():
     rows = []
