@@ -6,6 +6,19 @@ from flask import Flask, jsonify, request
 app = Flask(__name__)
 alerts = []
 LOG_FILE = Path("data/logs/alerts.jsonl")
+REQUIRED_ALERT_FIELDS = [
+    "device_id",
+    "camera_id",
+    "timestamp",
+    "object",
+    "threat_label",
+    "confidence",
+    "box",
+]
+
+
+def get_missing_fields(alert):
+    return [field for field in REQUIRED_ALERT_FIELDS if field not in alert]
 
 
 def log_alert(alert):
@@ -21,6 +34,13 @@ def receive_alert():
 
     if not alert:
         return jsonify({"error": "missing JSON alert"}), 400
+
+    missing_fields = get_missing_fields(alert)
+    if missing_fields:
+        return jsonify({
+            "error": "missing required alert fields",
+            "missing_fields": missing_fields,
+        }), 400
 
     alerts.append(alert)
     log_alert(alert)
