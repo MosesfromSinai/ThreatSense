@@ -63,6 +63,26 @@ The main goals of this project are to:
 - create a scalable distributed system design
 - safely simulate threat detection using harmless objects
 
+## Running the Demo
+
+Start the fog server on the laptop or lab computer:
+
+```bash
+python fog/server.py
+```
+
+Test one edge alert without running YOLO:
+
+```bash
+python edge/alert_sender.py
+```
+
+Run the edge detection camera loop:
+
+```bash
+python edge/detect.py
+```
+
 ## Team Members
 
 Thursday Project Group 2 - ThreatSense
