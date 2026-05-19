@@ -83,6 +83,14 @@ Run the edge detection camera loop:
 python edge/detect.py
 ```
 
+## Fog Endpoints
+
+- `GET /` - simple browser dashboard
+- `POST /alert` - receives JSON alerts from edge devices
+- `GET /alerts` - returns received alerts as JSON
+- `GET /devices` - summarizes alerts by device ID
+- `GET /health` - checks whether the fog server is running
+
 ## Team Members
 
 Thursday Project Group 2 - ThreatSense
