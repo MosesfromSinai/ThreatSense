@@ -91,6 +91,22 @@ python edge/detect.py
 - `GET /devices` - summarizes alerts by device ID
 - `GET /health` - checks whether the fog server is running
 
+## Alert JSON Format
+
+Edge devices send alerts to the fog server as JSON:
+
+```json
+{
+  "device_id": "jetson-nano-01",
+  "camera_id": 0,
+  "timestamp": "2026-05-19 14:30:00",
+  "object": "banana",
+  "threat_label": "mock_gun_threat",
+  "confidence": 0.95,
+  "box": [100, 100, 300, 300]
+}
+```
+
 ## Team Members
 
 Thursday Project Group 2 - ThreatSense
