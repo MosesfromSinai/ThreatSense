@@ -2,7 +2,7 @@ import time
 
 import requests
 
-FOG_ALERTS_URL = "http://127.0.0.1:5000/alerts"
+FOG_ALERTS_URL = "http://127.0.0.1:5001/alerts"
 
 
 def main():
