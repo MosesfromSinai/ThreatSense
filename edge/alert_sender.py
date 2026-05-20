@@ -1,4 +1,5 @@
 from datetime import datetime
+from threading import Thread
 
 import requests
 
@@ -43,6 +44,11 @@ def send_alert(alert_payload):
 
     print("Alert was not sent to fog server")
     return False
+
+
+def send_alert_async(alert_payload):
+    alert_thread = Thread(target=send_alert, args=(alert_payload,), daemon=True)
+    alert_thread.start()
 
 
 if __name__ == "__main__":

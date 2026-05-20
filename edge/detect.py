@@ -2,7 +2,7 @@ import cv2
 import time
 from ultralytics import YOLO
 
-from alert_sender import build_alert_payload, send_alert
+from alert_sender import build_alert_payload, send_alert_async
 from config import (
     ALERT_COOLDOWN_SECONDS,
     CAMERA_ID,
@@ -82,8 +82,8 @@ def main():
                             (x1, y1, x2, y2),
                         )
 
-                        if send_alert(alert_payload):
-                            last_alert_time = current_time
+                        send_alert_async(alert_payload)
+                        last_alert_time = current_time
 
         # Draw the most recent detection for a short time
         if (
