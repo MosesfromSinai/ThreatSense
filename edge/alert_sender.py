@@ -18,8 +18,8 @@ def build_alert_payload(detected_object, threat_label, confidence, box):
         "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "object": detected_object,
         "threat_label": threat_label,
-        "confidence": round(confidence, 2),
-        "box": list(box),
+        "confidence": round(float(confidence), 2),
+        "box": [int(value) for value in box],
     }
 
 
