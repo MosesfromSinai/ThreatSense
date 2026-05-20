@@ -7,6 +7,7 @@ from config import (
     ALERT_COOLDOWN_SECONDS,
     CAMERA_ID,
     CONFIDENCE_THRESHOLD,
+    DETECTION_MEMORY_SECONDS,
     DEVICE_ID,
     FOG_SERVER_URL,
     MOCK_THREAT_CLASSES,
@@ -14,8 +15,6 @@ from config import (
 
 model = YOLO("yolov8n.pt")
 
-# Keeps the box on screen briefly even if YOLO misses a frame
-DETECTION_MEMORY_SECONDS = 1.0
 last_detection = None
 last_detection_time = 0
 last_alert_time = 0
