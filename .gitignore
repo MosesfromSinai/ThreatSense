@@ -1,3 +1,4 @@
 requirements.txt
 yolov8n.pt
 data/logs/*.jsonl
+__pycache__/
