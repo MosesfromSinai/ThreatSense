@@ -69,11 +69,6 @@ def main():
                     last_detection_time = current_time
                     detection_found = True
 
-                    print(
-                        f"Detected {detected_object} as {mock_threat_label} "
-                        f"with confidence {confidence:.2f}"
-                    )
-
                     if current_time - last_alert_time >= ALERT_COOLDOWN_SECONDS:
                         alert_payload = build_alert_payload(
                             detected_object,
@@ -81,6 +76,15 @@ def main():
                             confidence,
                             (x1, y1, x2, y2),
                         )
+
+                        print("-" * 50)
+                        print("New ThreatSense alert")
+                        print(
+                            f"Detected {detected_object} as {mock_threat_label} "
+                            f"with confidence {confidence:.2f}"
+                        )
+                        print(f"Next alert available in {ALERT_COOLDOWN_SECONDS} seconds")
+                        print("-" * 50)
 
                         send_alert_async(alert_payload)
                         last_alert_time = current_time
