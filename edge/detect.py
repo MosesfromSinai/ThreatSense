@@ -6,14 +6,13 @@ from alert_sender import build_alert_payload, send_alert
 from config import (
     ALERT_COOLDOWN_SECONDS,
     CAMERA_ID,
+    CONFIDENCE_THRESHOLD,
     DEVICE_ID,
     FOG_SERVER_URL,
     MOCK_THREAT_CLASSES,
 )
 
 model = YOLO("yolov8n.pt")
-
-CONFIDENCE_THRESHOLD = 0.30
 
 # Keeps the box on screen briefly even if YOLO misses a frame
 DETECTION_MEMORY_SECONDS = 1.0
