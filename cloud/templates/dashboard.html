@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ThreatSense Cloud Dashboard</title>
+    <meta http-equiv="refresh" content="3">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <div class="dashboard">
+        <header class="hero">
+            <div>
+                <p class="eyebrow">Cloud Layer Monitoring</p>
+                <h1>ThreatSense Cloud Dashboard</h1>
+                <p class="subtitle">
+                    Centralized alert storage and long-term monitoring from fog devices.
+                </p>
+            </div>
+
+            <div class="status-pill">
+                <span class="status-dot"></span>
+                Cloud Online
+            </div>
+        </header>
+
+        <section class="stats-grid">
+            <div class="stat-card">
+                <p>Total Cloud Alerts</p>
+                <h2>{{ total_alerts }}</h2>
+                <span>All forwarded alerts received</span>
+            </div>
+
+            <div class="stat-card">
+                <p>Displayed Alerts</p>
+                <h2>{{ displayed_alert_count }}</h2>
+                <span>Latest cloud alerts shown</span>
+            </div>
+
+            <div class="stat-card">
+                <p>Reporting Devices</p>
+                <h2>{{ active_devices }}</h2>
+                <span>Unique edge devices tracked</span>
+            </div>
+        </section>
+
+        <section class="content-grid">
+            <div class="alerts-panel">
+                <div class="panel-header">
+                    <div>
+                        <h2>Forwarded Cloud Alerts</h2>
+                        <p>Showing the 10 newest alerts received from the fog layer.</p>
+                    </div>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>Device</th>
+                            <th>Object</th>
+                            <th>Threat Type</th>
+                            <th>Confidence</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% if alerts %}
+                            {% for alert in alerts %}
+                            <tr>
+                                <td>{{ alert.timestamp }}</td>
+                                <td>{{ alert.device_id }}</td>
+                                <td>{{ alert.object }}</td>
+                                <td>
+                                    <span class="threat-badge">
+                                        {{ alert.threat_label.replace("_", " ").title() }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="confidence">
+                                        <span>{{ "%.1f"|format(alert.confidence * 100) }}%</span>
+                                        <div class="confidence-bar">
+                                            <div style="width: {{ alert.confidence * 100 }}%;"></div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="5" class="empty-state">
+                                    No cloud alerts received yet. Waiting for fog layer forwarding...
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+
+            <aside class="side-panel">
+                <h2>Cloud Role</h2>
+
+                <div class="flow-step">
+                    <span>1</span>
+                    <div>
+                        <h3>Receives Fog Alerts</h3>
+                        <p>The fog server forwards validated alerts to the cloud endpoint.</p>
+                    </div>
+                </div>
+
+                <div class="flow-step">
+                    <span>2</span>
+                    <div>
+                        <h3>Stores Alert Logs</h3>
+                        <p>Cloud alerts are written into a persistent JSONL log file.</p>
+                    </div>
+                </div>
+
+                <div class="flow-step">
+                    <span>3</span>
+                    <div>
+                        <h3>Central Monitoring</h3>
+                        <p>The dashboard gives a higher-level view of alerts across devices.</p>
+                    </div>
+                </div>
+            </aside>
+        </section>
+
+        <p class="footer-note">Cloud dashboard auto-refreshes every 3 seconds</p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ThreatSense Dashboard</title>
+    <meta http-equiv="refresh" content="3">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <div class="dashboard">
+        <header class="hero">
+            <div>
+                <p class="eyebrow">Fog Layer Monitoring</p>
+                <h1>ThreatSense Dashboard</h1>
+                <p class="subtitle">Real-time alerts from edge detection devices.</p>
+            </div>
+
+            <div class="status-pill">
+                <span class="status-dot"></span>
+                System Online
+            </div>
+        </header>
+
+        <section class="stats-grid">
+            <div class="stat-card">
+                <p>Total Alerts</p>
+                <h2>{{ total_alerts }}</h2>
+                <span>All detections received</span>
+            </div>
+
+            <div class="stat-card">
+                <p>Displayed Alerts</p>
+                <h2>{{ displayed_alert_count }}</h2>
+                <span>Latest alerts shown</span>
+            </div>
+
+            <div class="stat-card">
+                <p>Active Devices</p>
+                <h2>{{ active_devices }}</h2>
+                <span>Edge devices reporting</span>
+            </div>
+        </section>
+
+        <section class="content-grid">
+            <div class="alerts-panel">
+                <div class="panel-header">
+                    <div>
+                        <h2>Recent Alerts</h2>
+                        <p>Showing the 10 newest detections</p>
+                    </div>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>Device</th>
+                            <th>Object</th>
+                            <th>Threat Type</th>
+                            <th>Confidence</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% if alerts %}
+                            {% for alert in alerts %}
+                            <tr>
+                                <td>{{ alert.timestamp }}</td>
+                                <td>{{ alert.device_id }}</td>
+                                <td>{{ alert.object }}</td>
+                                <td>
+                                    <span class="threat-badge">
+                                        {{ alert.threat_label.replace("_", " ").title() }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="confidence">
+                                        <span>{{ "%.1f"|format(alert.confidence * 100) }}%</span>
+                                        <div class="confidence-bar">
+                                            <div style="width: {{ alert.confidence * 100 }}%;"></div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="5" class="empty-state">
+                                    No alerts yet. Waiting for edge devices...
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+
+            <aside class="side-panel">
+                <h2>System Flow</h2>
+
+                <div class="flow-step">
+                    <span>1</span>
+                    <div>
+                        <h3>Edge Detection</h3>
+                        <p>Jetson Nano processes camera input locally.</p>
+                    </div>
+                </div>
+
+                <div class="flow-step">
+                    <span>2</span>
+                    <div>
+                        <h3>Fog Alerting</h3>
+                        <p>Alerts are received, logged, and displayed.</p>
+                    </div>
+                </div>
+
+                <div class="flow-step">
+                    <span>3</span>
+                    <div>
+                        <h3>Cloud Forwarding</h3>
+                        <p>Alerts can be forwarded for long-term storage.</p>
+                    </div>
+                </div>
+            </aside>
+        </section>
+
+        <p class="footer-note">Auto-refreshes every 3 seconds</p>
+    </div>
+</body>
+</html>
