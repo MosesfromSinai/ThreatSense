@@ -91,6 +91,20 @@ python edge/detect.py
 - `GET /devices` - summarizes alerts by device ID
 - `GET /health` - checks whether the fog server is running
 
+## Cloud Demo
+
+The cloud layer runs as a Flask API on an AWS EC2 VM:
+
+```bash
+python cloud/server.py
+```
+
+- Cloud dashboard: `http://52.53.150.132:5001`
+- Cloud alert endpoint: `http://52.53.150.132:5001/cloud-alert`
+- Cloud alerts API: `http://52.53.150.132:5001/alerts`
+
+The EC2 security group must allow inbound TCP traffic on port `5001`.
+
 ## Alert JSON Format
 
 Edge devices send alerts to the fog server as JSON:
