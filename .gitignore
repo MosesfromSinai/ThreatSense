@@ -1,4 +1,7 @@
 
 yolov8n.pt
 data/logs/*.jsonl
+cloud/data/*.jsonl
 __pycache__/
+.env
+*.pem
