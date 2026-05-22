@@ -125,8 +125,16 @@ def dashboard():
     for alert in reversed(alerts[-10:]):
         timestamp = escape(str(alert.get("timestamp", "unknown")))
         device = escape(str(alert.get("device_id", "unknown")))
-        label = escape(str(alert.get("threat_label", "unknown")))
-        #confidence = escape(str(alert.get("confidence", "unknown")))
+
+        raw_label = str(alert.get("threat_label", "unknown"))
+
+        label_display_names = {
+            "mock_gun_threat": "Mock Gun Threat",
+            "mock_knife_thrat": "Mock Knife Threat",
+        }
+
+        label = escape(label_display_names.get(raw_label, raw_label.replace("_", " ").title()))
+
         raw_confidence = alert.get("confidence", "unknown")
 
         try:
@@ -139,7 +147,7 @@ def dashboard():
             <tr>
                 <td>{timestamp}</td>
                 <td>{device}</td>
-                <td>{label}</td>
+                <td><span class="badge">{label}</span></td>
                 <td>{confidence}</td>
             </tr>
             """
