@@ -1,5 +1,6 @@
 import cv2
 import time
+import platform
 from ultralytics import YOLO
 
 from alert_sender import build_alert_payload, send_alert_async
@@ -19,11 +20,21 @@ last_detection = None
 last_detection_time = 0
 last_alert_time = 0
 
+def open_camera(camera_id):
+    #opens webcam using correct operating system
+    system = platform.system()
+
+    if system == "Windows":
+        return cv2.VideoCapture(camera_id, cv2.CAP_DSHOW)
+    elif system == "Darwin":  # macOS
+        return cv2.VideoCapture(camera_id, cv2.CAP_AVFOUNDATION)
+    else:
+        return cv2.VideoCapture(camera_id)
 
 def main():
     global last_detection, last_detection_time, last_alert_time
 
-    camera = cv2.VideoCapture(CAMERA_ID, cv2.CAP_AVFOUNDATION)
+    camera = open_camera(CAMERA_ID)
 
     if not camera.isOpened():
         print("Error: could not open webcam")
