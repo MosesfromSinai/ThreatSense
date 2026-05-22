@@ -5,7 +5,7 @@ from pathlib import Path
 from flask import Flask, jsonify, request, render_template
 
 app = Flask(__name__)
-LOG_FILE = Path("cloud/data/alerts.jsonl")
+ALERTS_FILE = Path("cloud/data/alerts.json")
 REQUIRED_ALERT_FIELDS = [
     "device_id",
     "camera_id",
@@ -22,11 +22,11 @@ def get_missing_fields(alert):
 
 
 def load_logged_alerts():
-    if not LOG_FILE.exists():
+    if not ALERTS_FILE.exists():
         return []
 
     loaded_alerts = []
-    with LOG_FILE.open() as log_file:
+    with ALERTS_FILE.open() as log_file:
         for line in log_file:
             try:
                 loaded_alerts.append(json.loads(line))
@@ -39,9 +39,9 @@ alerts = load_logged_alerts()
 
 
 def log_alert(alert):
-    LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
+    ALERTS_FILE.parent.mkdir(parents=True, exist_ok=True)
 
-    with LOG_FILE.open("a") as log_file:
+    with ALERTS_FILE.open("a") as log_file:
         log_file.write(json.dumps(alert) + "\n")
 
 
