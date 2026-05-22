@@ -134,7 +134,7 @@ def dashboard():
 
         label_display_names = {
             "mock_gun_threat": "Mock Gun Threat",
-            "mock_knife_thrat": "Mock Knife Threat",
+            "mock_knife_threat": "Mock Knife Threat",
         }
 
         label = escape(label_display_names.get(raw_label, raw_label.replace("_", " ").title()))
