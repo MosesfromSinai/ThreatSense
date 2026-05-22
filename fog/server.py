@@ -121,23 +121,152 @@ def list_devices():
 @app.route("/", methods=["GET"])
 def dashboard():
     rows = []
+
+    # dashboard only displays the 10 most recent alerts so page doesn't get flooded.
+    displayed_alert_count = min(len(alerts), 10)
+    # count each device that has sent alerts to the fog server.
+    active_devices = len({alert.get("device_id", "unknown") for alert in alerts})
+
     for alert in reversed(alerts[-10:]):
+        # escape text values before inserting them into html to prevent rendering issues.
         timestamp = escape(str(alert.get("timestamp", "unknown")))
         device = escape(str(alert.get("device_id", "unknown")))
-        label = escape(str(alert.get("threat_label", "unknown")))
-        confidence = escape(str(alert.get("confidence", "unknown")))
-        rows.append(f"<li>{timestamp} - {device} - {label} ({confidence})</li>")
 
+        # turn internal threat labels into clearer dashboard display names.
+        raw_label = str(alert.get("threat_label", "unknown"))
+
+        label_display_names = {
+            "mock_gun_threat": "Mock Gun Threat",
+            "mock_knife_threat": "Mock Knife Threat",
+        }
+
+        label = escape(label_display_names.get(raw_label, raw_label.replace("_", " ").title()))
+
+        # displays cpnfidence as a percentage.
+        raw_confidence = alert.get("confidence", "unknown")
+
+        try:
+            confidence = f"{float(raw_confidence) * 100:.1f}%"
+        except (ValueError, TypeError):
+            confidence = escape(str(raw_confidence))
+
+        rows.append(
+            f"""
+            <tr>
+                <td>{timestamp}</td>
+                <td>{device}</td>
+                <td><span class="badge">{label}</span></td>
+                <td>{confidence}</td>
+            </tr>
+            """
+        )
+    # shows message when server is running but no alerts have arrived yet.
     if not rows:
-        rows.append("<li>No alerts received yet.</li>")
+        rows.append(
+            """
+            <tr>
+                <td colspan="4">System running, waiting for alerts from edge devices...</td>
+            </tr>
+            """
+        )
 
     return f"""
     <meta http-equiv="refresh" content="3">
-    <h1>ThreatSense Fog Dashboard</h1>
-    <p>Total alerts: {len(alerts)}</p>
-    <ul>{''.join(rows)}</ul>
-    """
+    <style>
+        body{{
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 30px;
+            color: #222;
+        }}
 
+        .container{{
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 24px;
+            border-radius: 10px;
+        }}
+
+        h1{{
+        margin-bottom: 5px;
+        }}
+
+        .subtitle{{
+            color: #555;
+            margin-top: 0;
+        }}
+
+        table{{
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }}
+
+        th, td{{
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }}
+
+        th{{
+            background-color: #222;
+            color: white;
+        }}
+
+        tr:hover{{
+            background-color: #f1f1f1;
+        }}
+
+        .badge{{
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            background-color: #ffe0e0;
+            color: #9b1c1c;
+            font-weight: bold;
+            font-size: 0.9em;
+        }}
+
+        .note{{
+            color: #555;
+            margin-top: 20px;
+        }}
+    </style>
+
+    <div class="container">
+        <h1>ThreatSense Fog Dashboard</h1>
+        <p>Real-time alert monitoring from edge devices.</p>
+
+        <table border="1" cellpadding="8" cellspacing="0">
+            <tr>
+                <th>Total Alerts</th>
+                <th>Displayed Alerts</th>
+                <th>Active Devices</th>
+            </tr>
+            <tr>
+                <td>{len(alerts)}</td>
+                <td>{displayed_alert_count}</td>
+                <td>{active_devices}</td>
+            </tr>
+        </table>
+
+        <p>Showing the 10 most recent alerts.</p>
+
+        <table border="1" cellpadding="8" cellspacing="0">
+            <tr>
+                <th>Timestamp</th>
+                <th>Device ID</th>
+                <th>Threat Label</th>
+                <th>Confidence</th>
+            </tr>
+        {''.join(rows)}
+    </table>
+
+    <p class="note">Dashboard auto-refreshes every 3 seconds.</p>
+</div>
+"""
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5001)
