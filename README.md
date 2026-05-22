@@ -117,7 +117,12 @@ Edge devices send alerts to the fog server as JSON:
   "object": "banana",
   "threat_label": "mock_gun_threat",
   "confidence": 0.95,
-  "box": [100, 100, 300, 300]
+  "bbox": {
+    "x1": 100,
+    "y1": 100,
+    "x2": 300,
+    "y2": 300
+  }
 }
 ```
 
