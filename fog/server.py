@@ -4,6 +4,8 @@ from pathlib import Path
 
 from flask import Flask, jsonify, request
 
+from cloud_forwarder import forward_alert_to_cloud
+
 app = Flask(__name__)
 LOG_FILE = Path("data/logs/alerts.jsonl")
 REQUIRED_ALERT_FIELDS = [
@@ -66,6 +68,7 @@ def receive_alert():
 
     alerts.append(alert)
     log_alert(alert)
+    forward_alert_to_cloud(alert)
     print(f"Alert received from {alert.get('device_id')}: {alert.get('threat_label')}")
 
     return jsonify({"status": "received"}), 200
