@@ -1,7 +1,18 @@
+import json
+from pathlib import Path
+
 from flask import Flask, jsonify, request
 
 app = Flask(__name__)
 alerts = []
+LOG_FILE = Path("cloud/data/alerts.jsonl")
+
+
+def log_alert(alert):
+    LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
+
+    with LOG_FILE.open("a") as log_file:
+        log_file.write(json.dumps(alert) + "\n")
 
 
 @app.route("/", methods=["GET"])
@@ -17,6 +28,7 @@ def receive_cloud_alert():
         return jsonify({"error": "missing JSON alert"}), 400
 
     alerts.append(alert)
+    log_alert(alert)
     print(f"Cloud alert received from {alert.get('device_id')}")
 
     return jsonify({"status": "received"}), 200
