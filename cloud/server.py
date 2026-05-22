@@ -13,7 +13,7 @@ REQUIRED_ALERT_FIELDS = [
     "object",
     "threat_label",
     "confidence",
-    "box",
+    "bbox",
 ]
 
 
