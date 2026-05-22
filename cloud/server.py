@@ -4,8 +4,24 @@ from pathlib import Path
 from flask import Flask, jsonify, request
 
 app = Flask(__name__)
-alerts = []
 LOG_FILE = Path("cloud/data/alerts.jsonl")
+
+
+def load_logged_alerts():
+    if not LOG_FILE.exists():
+        return []
+
+    loaded_alerts = []
+    with LOG_FILE.open() as log_file:
+        for line in log_file:
+            try:
+                loaded_alerts.append(json.loads(line))
+            except json.JSONDecodeError:
+                pass
+    return loaded_alerts
+
+
+alerts = load_logged_alerts()
 
 
 def log_alert(alert):
