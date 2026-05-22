@@ -119,6 +119,9 @@ def list_devices():
 def dashboard():
     rows = []
 
+    displayed_alert_count = min(len(alerts), 10)
+    active_devices = len({alert.get("device_id", "unknown") for alert in alerts})
+
     for alert in reversed(alerts[-10:]):
         timestamp = escape(str(alert.get("timestamp", "unknown")))
         device = escape(str(alert.get("device_id", "unknown")))
@@ -154,7 +157,21 @@ def dashboard():
     return f"""
     <meta http-equiv="refresh" content="3">
     <h1>ThreatSense Fog Dashboard</h1>
-    <p>Total alerts: {len(alerts)}</p>
+    <p>Real-time alert monitoring from edge devices.</p>
+
+    <table border="1" cellpadding="8" cellspacing="0">
+        <tr>
+            <th>Total Alerts</th>
+            <th>Displayed Alerts</th>
+            <th>Active Devices</th>
+        </tr>
+        <tr>
+            <td>{len(alerts)}</td>
+            <td>{displayed_alert_count}</td>
+            <td>{active_devices}</td>
+        </tr>
+    </table>
+
     <p>Showing the 10 most recent alerts.</p>
 
     <table border="1" cellpadding="8" cellspacing="0">
