@@ -13,6 +13,8 @@ from config import (
 
 
 def build_alert_payload(detected_object, threat_label, confidence, box):
+    x1, y1, x2, y2 = [int(value) for value in box]
+
     return {
         "device_id": DEVICE_ID,
         "camera_id": CAMERA_ID,
@@ -20,7 +22,12 @@ def build_alert_payload(detected_object, threat_label, confidence, box):
         "object": detected_object,
         "threat_label": threat_label,
         "confidence": round(float(confidence), 2),
-        "box": [int(value) for value in box],
+        "bbox": {
+            "x1": x1,
+            "y1": y1,
+            "x2": x2,
+            "y2": y2,
+        },
     }
 
 
