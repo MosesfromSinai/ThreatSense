@@ -123,7 +123,13 @@ def dashboard():
         timestamp = escape(str(alert.get("timestamp", "unknown")))
         device = escape(str(alert.get("device_id", "unknown")))
         label = escape(str(alert.get("threat_label", "unknown")))
-        confidence = escape(str(alert.get("confidence", "unknown")))
+        #confidence = escape(str(alert.get("confidence", "unknown")))
+        raw_confidence = alert.get("confidence", "unknown")
+
+        try:
+            confidence = f"{float(raw_confidence) * 100:.1f}%"
+        except (ValueError, TypeError):
+            confidence = escape(str(raw_confidence))
 
         rows.append(
             f"""
@@ -140,7 +146,7 @@ def dashboard():
         rows.append(
             """
             <tr>
-                <td colspan="4">No alerts received yet.</td>
+                <td colspan="4">System running, waiting for alerts from edge devices...</td>
             </tr>
             """
         )
@@ -156,7 +162,7 @@ def dashboard():
             <th>Timestamp</th>
             <th>Device ID</th>
             <th>Threat Label</th>
-            <th>confidence</th>
+            <th>Confidence</th>
         </tr>
     {''.join(rows)}
 </table>
