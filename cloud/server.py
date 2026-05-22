@@ -1,4 +1,5 @@
 import json
+from html import escape
 from pathlib import Path
 
 from flask import Flask, jsonify, request
@@ -33,7 +34,23 @@ def log_alert(alert):
 
 @app.route("/", methods=["GET"])
 def dashboard():
-    return "ThreatSense cloud server running"
+    rows = []
+    for alert in reversed(alerts[-10:]):
+        timestamp = escape(str(alert.get("timestamp", "unknown")))
+        device = escape(str(alert.get("device_id", "unknown")))
+        label = escape(str(alert.get("threat_label", "unknown")))
+        confidence = escape(str(alert.get("confidence", "unknown")))
+        rows.append(f"<li>{timestamp} - {device} - {label} ({confidence})</li>")
+
+    if not rows:
+        rows.append("<li>No cloud alerts received yet.</li>")
+
+    return f"""
+    <meta http-equiv="refresh" content="3">
+    <h1>ThreatSense Cloud Dashboard</h1>
+    <p>Total cloud alerts: {len(alerts)}</p>
+    <ul>{''.join(rows)}</ul>
+    """
 
 
 @app.route("/cloud-alert", methods=["POST"])
