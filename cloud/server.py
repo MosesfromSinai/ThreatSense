@@ -22,5 +22,13 @@ def receive_cloud_alert():
     return jsonify({"status": "received"}), 200
 
 
+@app.route("/alerts", methods=["GET"])
+def list_alerts():
+    return jsonify({
+        "count": len(alerts),
+        "alerts": alerts,
+    }), 200
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5001)
