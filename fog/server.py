@@ -149,7 +149,7 @@ def dashboard():
     <meta http-equiv="refresh" content="3">
     <h1>ThreatSense Fog Dashboard</h1>
     <p>Total alerts: {len(alerts)}</p>
-    <ul>{''.join(rows)}</ul>
+    <p>Showing the 10 most recent alerts.</p>
 
     <table border="1" cellpadding="8" cellspacing="0">
         <tr>
@@ -158,11 +158,9 @@ def dashboard():
             <th>Threat Label</th>
             <th>confidence</th>
         </tr>
-    </tr>
     {''.join(rows)}
 </table>
 """
-
 
 
 if __name__ == "__main__":
