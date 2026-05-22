@@ -1,8 +1,9 @@
+import os
 import time
 
 import requests
 
-FOG_ALERTS_URL = "http://127.0.0.1:5001/alerts"
+FOG_ALERTS_URL = os.getenv("FOG_ALERTS_URL", "http://127.0.0.1:5001/alerts")
 
 
 def main():
