@@ -118,22 +118,51 @@ def list_devices():
 @app.route("/", methods=["GET"])
 def dashboard():
     rows = []
+
     for alert in reversed(alerts[-10:]):
         timestamp = escape(str(alert.get("timestamp", "unknown")))
         device = escape(str(alert.get("device_id", "unknown")))
         label = escape(str(alert.get("threat_label", "unknown")))
         confidence = escape(str(alert.get("confidence", "unknown")))
-        rows.append(f"<li>{timestamp} - {device} - {label} ({confidence})</li>")
+
+        rows.append(
+            f"""
+            <tr>
+                <td>{timestamp}</td>
+                <td>{device}</td>
+                <td>{label}</td>
+                <td>{confidence}</td>
+            </tr>
+            """
+        )
 
     if not rows:
-        rows.append("<li>No alerts received yet.</li>")
+        rows.append(
+            """
+            <tr>
+                <td colspan="4">No alerts received yet.</td>
+            </tr>
+            """
+        )
 
     return f"""
     <meta http-equiv="refresh" content="3">
     <h1>ThreatSense Fog Dashboard</h1>
     <p>Total alerts: {len(alerts)}</p>
     <ul>{''.join(rows)}</ul>
-    """
+
+    <table border="1" cellpadding="8" cellspacing="0">
+        <tr>
+            <th>Timestamp</th>
+            <th>Device ID</th>
+            <th>Threat Label</th>
+            <th>confidence</th>
+        </tr>
+    </tr>
+    {''.join(rows)}
+</table>
+"""
+
 
 
 if __name__ == "__main__":
