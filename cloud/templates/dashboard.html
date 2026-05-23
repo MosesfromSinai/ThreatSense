@@ -1,15 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Page metadata -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Dashboard title -->
     <title>ThreatSense Cloud Dashboard</title>
+    <!-- Auto refresh every 3 seconds -->
     <meta http-equiv="refresh" content="3">
+    <!-- External stylesheet -->
     <link rel="stylesheet" href="/static/style.css">
 </head>
 
 <body>
     <div class="dashboard">
+        <!-- Header section -->
         <header class="hero">
             <div>
                 <p class="eyebrow">Cloud Layer Monitoring</p>
@@ -19,42 +24,60 @@
                 </p>
             </div>
 
+            <!-- System status -->
             <div class="status-pill">
                 <span class="status-dot"></span>
                 Cloud Online
             </div>
         </header>
 
+        <!-- Statistics cards -->
         <section class="stats-grid">
+
             <div class="stat-card">
                 <p>Total Cloud Alerts</p>
+
                 <h2>{{ total_alerts }}</h2>
+
                 <span>All forwarded alerts received</span>
             </div>
 
             <div class="stat-card">
                 <p>Displayed Alerts</p>
+
                 <h2>{{ displayed_alert_count }}</h2>
+
                 <span>Latest cloud alerts shown</span>
             </div>
 
             <div class="stat-card">
                 <p>Reporting Devices</p>
+
                 <h2>{{ active_devices }}</h2>
+
                 <span>Unique edge devices tracked</span>
             </div>
+
         </section>
 
+        <!-- Main dashboard content -->
         <section class="content-grid">
+
+            <!-- Alerts table -->
             <div class="alerts-panel">
+
                 <div class="panel-header">
                     <div>
                         <h2>Forwarded Cloud Alerts</h2>
-                        <p>Showing the 10 newest alerts received from the fog layer.</p>
+
+                        <p>
+                            Showing the 10 newest alerts received from the fog layer.
+                        </p>
                     </div>
                 </div>
 
                 <table>
+
                     <thead>
                         <tr>
                             <th>Timestamp</th>
@@ -66,68 +89,117 @@
                     </thead>
 
                     <tbody>
+
+                        <!-- Render alerts dynamically -->
                         {% if alerts %}
+
                             {% for alert in alerts %}
+
                             <tr>
+
                                 <td>{{ alert.timestamp }}</td>
+
                                 <td>{{ alert.device_id }}</td>
+
                                 <td>{{ alert.object }}</td>
+
                                 <td>
                                     <span class="threat-badge">
                                         {{ alert.threat_label.replace("_", " ").title() }}
                                     </span>
                                 </td>
+
                                 <td>
                                     <div class="confidence">
-                                        <span>{{ "%.1f"|format(alert.confidence * 100) }}%</span>
+
+                                        <span>
+                                            {{ "%.1f"|format(alert.confidence * 100) }}%
+                                        </span>
+
+                                        <!-- Confidence progress bar -->
                                         <div class="confidence-bar">
                                             <div style="width: {{ alert.confidence * 100 }}%;"></div>
                                         </div>
+
                                     </div>
                                 </td>
+
                             </tr>
+
                             {% endfor %}
+
                         {% else %}
+
+                            <!-- Empty state -->
                             <tr>
                                 <td colspan="5" class="empty-state">
                                     No cloud alerts received yet. Waiting for fog layer forwarding...
                                 </td>
                             </tr>
+
                         {% endif %}
+
                     </tbody>
+
                 </table>
             </div>
 
+            <!-- Cloud system explanation -->
             <aside class="side-panel">
+
                 <h2>Cloud Role</h2>
 
                 <div class="flow-step">
+
                     <span>1</span>
+
                     <div>
                         <h3>Receives Fog Alerts</h3>
-                        <p>The fog server forwards validated alerts to the cloud endpoint.</p>
+
+                        <p>
+                            The fog server forwards validated alerts to the cloud endpoint.
+                        </p>
                     </div>
+
                 </div>
 
                 <div class="flow-step">
+
                     <span>2</span>
+
                     <div>
                         <h3>Stores Alert Logs</h3>
-                        <p>Cloud alerts are written into a persistent JSONL log file.</p>
+
+                        <p>
+                            Cloud alerts are written into a persistent JSONL log file.
+                        </p>
                     </div>
+
                 </div>
 
                 <div class="flow-step">
+
                     <span>3</span>
+
                     <div>
                         <h3>Central Monitoring</h3>
-                        <p>The dashboard gives a higher-level view of alerts across devices.</p>
+
+                        <p>
+                            The dashboard gives a higher-level view of alerts across devices.
+                        </p>
                     </div>
+
                 </div>
+
             </aside>
+
         </section>
 
-        <p class="footer-note">Cloud dashboard auto-refreshes every 3 seconds</p>
+        <!-- Footer -->
+        <p class="footer-note">
+            Cloud dashboard auto-refreshes every 3 seconds
+        </p>
+
     </div>
 </body>
 </html>
