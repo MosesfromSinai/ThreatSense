@@ -63,9 +63,18 @@ def load_logged_alerts():
 
     with ALERTS_FILE.open() as alerts_file:
         try:
-            return json.load(alerts_file)
+            loaded_alerts = json.load(alerts_file)
         except json.JSONDecodeError:
             return []
+
+    if not isinstance(loaded_alerts, list):
+        return []
+
+    for alert in loaded_alerts:
+        if isinstance(alert, dict) and not get_missing_fields(alert):
+            prepare_alert_for_review(alert)
+
+    return loaded_alerts
 
 
 alerts = load_logged_alerts()
