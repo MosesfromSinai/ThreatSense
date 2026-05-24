@@ -14,11 +14,14 @@ from config import (
 
 def build_alert_payload(detected_object, threat_label, confidence, box):
     x1, y1, x2, y2 = [int(value) for value in box]
+    timestamp = datetime.now()
+    alert_id = f"{DEVICE_ID}-{timestamp.strftime('%Y%m%d-%H%M%S')}"
 
     return {
+        "alert_id": alert_id,
         "device_id": DEVICE_ID,
         "camera_id": CAMERA_ID,
-        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "timestamp": timestamp.strftime("%Y-%m-%d %H:%M:%S"),
         "object": detected_object,
         "threat_label": threat_label,
         "confidence": round(float(confidence), 2),
@@ -28,6 +31,7 @@ def build_alert_payload(detected_object, threat_label, confidence, box):
             "x2": x2,
             "y2": y2,
         },
+        "image_filename": f"{alert_id}.jpg",
     }
 
 
