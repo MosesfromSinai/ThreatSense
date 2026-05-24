@@ -3,7 +3,7 @@ import time
 import platform
 from ultralytics import YOLO
 
-from alert_sender import build_alert_payload, send_alert_async
+from alert_sender import add_frame_image, build_alert_payload, send_alert_async
 from config import (
     ALERT_COOLDOWN_SECONDS,
     CAMERA_ID,
@@ -87,6 +87,7 @@ def main():
                             confidence,
                             (x1, y1, x2, y2),
                         )
+                        alert_payload = add_frame_image(alert_payload, frame)
 
                         print("-" * 50)
                         print("New ThreatSense alert")
