@@ -1,3 +1,4 @@
+import base64
 import json
 from datetime import datetime
 from html import escape
@@ -7,6 +8,7 @@ from flask import Flask, jsonify, request, render_template
 
 app = Flask(__name__)
 ALERTS_FILE = Path("cloud/data/alerts.json")
+IMAGE_DIR = Path("cloud/static/alerts")
 REQUIRED_ALERT_FIELDS = [
     "device_id",
     "camera_id",
@@ -33,6 +35,25 @@ def prepare_alert_for_review(alert):
     alert.setdefault("admin_note", "")
 
     return alert
+
+
+def save_alert_image(alert):
+    image_data = alert.pop("image_data", None)
+    if not image_data:
+        return
+
+    image_filename = alert.get("image_filename") or f"{alert['alert_id']}.jpg"
+    image_filename = Path(image_filename).name
+    IMAGE_DIR.mkdir(parents=True, exist_ok=True)
+
+    try:
+        (IMAGE_DIR / image_filename).write_bytes(base64.b64decode(image_data))
+    except (ValueError, TypeError):
+        alert["image_error"] = "invalid base64 image data"
+        return
+
+    alert["image_filename"] = image_filename
+    alert["image_url"] = f"/static/alerts/{image_filename}"
 
 
 def load_logged_alerts():
@@ -106,6 +127,7 @@ def receive_cloud_alert():
         }), 400
 
     alert = prepare_alert_for_review(alert)
+    save_alert_image(alert)
     alerts.append(alert)
     save_alerts()
     print(f"Cloud alert received from {alert.get('device_id')}")
