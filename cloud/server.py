@@ -21,6 +21,19 @@ def get_missing_fields(alert):
     return [field for field in REQUIRED_ALERT_FIELDS if field not in alert]
 
 
+def prepare_alert_for_review(alert):
+    alert_id = f"{alert['device_id']}-{alert['timestamp']}"
+    alert_id = alert_id.replace(" ", "-").replace(":", "").replace("/", "-")
+
+    alert.setdefault("alert_id", alert_id)
+    alert.setdefault("verification_status", "pending")
+    alert.setdefault("verified_by", None)
+    alert.setdefault("verified_at", None)
+    alert.setdefault("admin_note", "")
+
+    return alert
+
+
 def load_logged_alerts():
     if not ALERTS_FILE.exists():
         return []
@@ -91,6 +104,7 @@ def receive_cloud_alert():
             "missing_fields": missing_fields,
         }), 400
 
+    alert = prepare_alert_for_review(alert)
     alerts.append(alert)
     save_alerts()
     print(f"Cloud alert received from {alert.get('device_id')}")
