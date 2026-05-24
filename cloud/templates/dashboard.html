@@ -139,6 +139,14 @@
                                     <span class="verification-status status-{{ alert.verification_status or 'pending' }}">
                                         {{ (alert.verification_status or "pending").replace("_", " ").title() }}
                                     </span>
+                                    {% if alert.verified_at %}
+                                        <div class="verification-detail">
+                                            {{ alert.verified_by }} at {{ alert.verified_at }}
+                                        </div>
+                                    {% endif %}
+                                    {% if alert.admin_note %}
+                                        <div class="verification-detail">{{ alert.admin_note }}</div>
+                                    {% endif %}
                                 </td>
 
                                 <td>
