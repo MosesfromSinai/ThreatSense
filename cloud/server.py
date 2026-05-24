@@ -1,11 +1,14 @@
+import base64
+import binascii
 import json
-from html import escape
+from datetime import datetime
 from pathlib import Path
 
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, redirect, request, render_template
 
 app = Flask(__name__)
-LOG_FILE = Path("cloud/data/alerts.jsonl")
+ALERTS_FILE = Path("cloud/data/alerts.json")
+IMAGE_DIR = Path("cloud/static/alerts")
 REQUIRED_ALERT_FIELDS = [
     "device_id",
     "camera_id",
@@ -13,7 +16,7 @@ REQUIRED_ALERT_FIELDS = [
     "object",
     "threat_label",
     "confidence",
-    "box",
+    "bbox",
 ]
 
 
@@ -21,51 +24,62 @@ def get_missing_fields(alert):
     return [field for field in REQUIRED_ALERT_FIELDS if field not in alert]
 
 
+def prepare_alert_for_review(alert):
+    alert_id = f"{alert['device_id']}-{alert['timestamp']}"
+    alert_id = alert_id.replace(" ", "-").replace(":", "").replace("/", "-")
+
+    alert.setdefault("alert_id", alert_id)
+    alert.setdefault("verification_status", "pending")
+    alert.setdefault("verified_by", None)
+    alert.setdefault("verified_at", None)
+    alert.setdefault("admin_note", "")
+
+    return alert
+
+
+def save_alert_image(alert):
+    image_data = alert.pop("image_data", None)
+    if not image_data:
+        return
+
+    image_filename = alert.get("image_filename") or f"{alert['alert_id']}.jpg"
+    image_filename = Path(image_filename).name
+    IMAGE_DIR.mkdir(parents=True, exist_ok=True)
+
+    try:
+        image_bytes = base64.b64decode(image_data, validate=True)
+    except (binascii.Error, ValueError, TypeError):
+        alert["image_error"] = "invalid base64 image data"
+        return
+
+    (IMAGE_DIR / image_filename).write_bytes(image_bytes)
+    alert["image_filename"] = image_filename
+    alert["image_url"] = f"/static/alerts/{image_filename}"
+
+
 def load_logged_alerts():
-    if not LOG_FILE.exists():
+    if not ALERTS_FILE.exists():
         return []
 
-    loaded_alerts = []
-    with LOG_FILE.open() as log_file:
-        for line in log_file:
-            try:
-                loaded_alerts.append(json.loads(line))
-            except json.JSONDecodeError:
-                pass
-    return loaded_alerts
+    with ALERTS_FILE.open() as alerts_file:
+        try:
+            return json.load(alerts_file)
+        except json.JSONDecodeError:
+            return []
 
 
 alerts = load_logged_alerts()
 
 
-def log_alert(alert):
-    LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
+def save_alerts():
+    ALERTS_FILE.parent.mkdir(parents=True, exist_ok=True)
 
-    with LOG_FILE.open("a") as log_file:
-        log_file.write(json.dumps(alert) + "\n")
+    with ALERTS_FILE.open("w") as alerts_file:
+        json.dump(alerts, alerts_file, indent=2)
 
 
 @app.route("/", methods=["GET"])
 def dashboard():
-    '''
-    rows = []
-    for alert in reversed(alerts[-10:]):
-        timestamp = escape(str(alert.get("timestamp", "unknown")))
-        device = escape(str(alert.get("device_id", "unknown")))
-        label = escape(str(alert.get("threat_label", "unknown")))
-        confidence = escape(str(alert.get("confidence", "unknown")))
-        rows.append(f"<li>{timestamp} - {device} - {label} ({confidence})</li>")
-
-    if not rows:
-        rows.append("<li>No cloud alerts received yet.</li>")
-
-    return f"""
-    <meta http-equiv="refresh" content="3">
-    <h1>ThreatSense Cloud Dashboard</h1>
-    <p>Total cloud alerts: {len(alerts)}</p>
-    <ul>{''.join(rows)}</ul>
-    """
-    '''
     displayed_alert_count = min(len(alerts), 10)
 
     active_devices = len(
@@ -94,8 +108,10 @@ def receive_cloud_alert():
             "missing_fields": missing_fields,
         }), 400
 
+    alert = prepare_alert_for_review(alert)
+    save_alert_image(alert)
     alerts.append(alert)
-    log_alert(alert)
+    save_alerts()
     print(f"Cloud alert received from {alert.get('device_id')}")
 
     return jsonify({"status": "received"}), 200
@@ -115,6 +131,25 @@ def health_check():
         "status": "running",
         "alert_count": len(alerts),
     }), 200
+
+
+@app.route("/verify/<alert_id>", methods=["POST"])
+def verify_alert(alert_id):
+    verification_status = request.form.get("verification_status")
+
+    if verification_status not in {"credible", "not_credible"}:
+        return jsonify({"error": "invalid verification status"}), 400
+
+    for alert in alerts:
+        if alert.get("alert_id") == alert_id:
+            alert["verification_status"] = verification_status
+            alert["verified_by"] = "demo-admin"
+            alert["verified_at"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            alert["admin_note"] = request.form.get("admin_note", "")
+            save_alerts()
+            return redirect("/")
+
+    return jsonify({"error": "alert not found"}), 404
 
 
 if __name__ == "__main__":

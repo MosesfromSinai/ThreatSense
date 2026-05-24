@@ -2,7 +2,7 @@
 
 ## Distributed Threat Detection and Classification System
 
-ThreatSense is a distributed proof-of-concept threat detection system designed for real-time object detection at the edge. The project demonstrates how devices such as a Jetson Nano can process live video locally, detect possible threats, and send alerts to a fog-layer device such as a laptop or lab computer.
+ThreatSense is a distributed proof-of-concept threat detection system designed for real-time object detection at the edge. The project demonstrates how devices such as a Jetson Orin Nano can process live video locally, detect possible threats, and send alerts to a fog-layer device such as a laptop or lab computer.
 
 For safety in our demo, we use fruits such as bananas and cucumbers as mock weapon-shaped objects instead of real weapons.
 
@@ -34,7 +34,7 @@ In a real emergency, response time is very important. ThreatSense is meant to de
 
 ## Technologies Used
 
-- Jetson Nano
+- Jetson Orin Nano
 - Camera module or USB webcam
 - Laptop or lab computer
 - Python
@@ -83,6 +83,14 @@ Run the edge detection camera loop:
 python edge/detect.py
 ```
 
+If the fog laptop IP changes, set the edge destination without editing code:
+
+```bash
+FOG_SERVER_URL=http://<fog-ip>:5001/alert python edge/detect.py
+```
+
+The edge device ID can also be changed with `DEVICE_ID=jetson-orin-02`.
+
 ## Fog Endpoints
 
 - `GET /` - simple browser dashboard
@@ -102,8 +110,14 @@ python cloud/server.py
 - Cloud dashboard: `http://52.53.150.132:5001`
 - Cloud alert endpoint: `http://52.53.150.132:5001/cloud-alert`
 - Cloud alerts API: `http://52.53.150.132:5001/alerts`
+- Cloud health check: `http://52.53.150.132:5001/health`
+- Cloud verification form: `POST /verify/<alert_id>`
 
 The EC2 security group must allow inbound TCP traffic on port `5001`.
+
+Cloud alerts are stored in `cloud/data/alerts.json`, and captured alert frames
+are stored in `cloud/static/alerts/`. The cloud dashboard lets the demo admin
+mark each alert as credible or not credible.
 
 ## Alert JSON Format
 
@@ -111,13 +125,21 @@ Edge devices send alerts to the fog server as JSON:
 
 ```json
 {
-  "device_id": "jetson-nano-01",
+  "alert_id": "jetson-orin-01-20260519-143000",
+  "device_id": "jetson-orin-01",
   "camera_id": 0,
   "timestamp": "2026-05-19 14:30:00",
   "object": "banana",
   "threat_label": "mock_gun_threat",
   "confidence": 0.95,
-  "box": [100, 100, 300, 300]
+  "bbox": {
+    "x1": 100,
+    "y1": 100,
+    "x2": 300,
+    "y2": 300
+  },
+  "image_filename": "jetson-orin-01-20260519-143000.jpg",
+  "image_data": "base64-encoded-jpeg-data"
 }
 ```
 

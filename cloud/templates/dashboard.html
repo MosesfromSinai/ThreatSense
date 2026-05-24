@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Dashboard title -->
     <title>ThreatSense Cloud Dashboard</title>
-    <!-- Auto refresh every 3 seconds -->
-    <meta http-equiv="refresh" content="3">
+    <!-- Auto refresh every 10 seconds -->
+    <meta http-equiv="refresh" content="10">
     <!-- External stylesheet -->
     <link rel="stylesheet" href="/static/style.css">
 </head>
@@ -85,6 +85,9 @@
                             <th>Object</th>
                             <th>Threat Type</th>
                             <th>Confidence</th>
+                            <th>Frame</th>
+                            <th>Status</th>
+                            <th>Review</th>
                         </tr>
                     </thead>
 
@@ -124,6 +127,36 @@
                                     </div>
                                 </td>
 
+                                <td>
+                                    {% if alert.image_url %}
+                                        <img class="alert-frame" src="{{ alert.image_url }}" alt="Alert frame">
+                                    {% else %}
+                                        No image
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    <span class="verification-status status-{{ alert.verification_status or 'pending' }}">
+                                        {{ (alert.verification_status or "pending").replace("_", " ").title() }}
+                                    </span>
+                                    {% if alert.verified_at %}
+                                        <div class="verification-detail">
+                                            {{ alert.verified_by }} at {{ alert.verified_at }}
+                                        </div>
+                                    {% endif %}
+                                    {% if alert.admin_note %}
+                                        <div class="verification-detail">{{ alert.admin_note }}</div>
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    <form method="post" action="/verify/{{ alert.alert_id }}">
+                                        <input type="text" name="admin_note" placeholder="Admin note">
+                                        <button type="submit" name="verification_status" value="credible">Credible</button>
+                                        <button type="submit" name="verification_status" value="not_credible">Not Credible</button>
+                                    </form>
+                                </td>
+
                             </tr>
 
                             {% endfor %}
@@ -132,7 +165,7 @@
 
                             <!-- Empty state -->
                             <tr>
-                                <td colspan="5" class="empty-state">
+                                <td colspan="8" class="empty-state">
                                     No cloud alerts received yet. Waiting for fog layer forwarding...
                                 </td>
                             </tr>
@@ -171,7 +204,7 @@
                         <h3>Stores Alert Logs</h3>
 
                         <p>
-                            Cloud alerts are written into a persistent JSONL log file.
+                            Cloud alerts are written into persistent JSON storage.
                         </p>
                     </div>
 
@@ -197,7 +230,7 @@
 
         <!-- Footer -->
         <p class="footer-note">
-            Cloud dashboard auto-refreshes every 3 seconds
+            Cloud dashboard auto-refreshes every 10 seconds
         </p>
 
     </div>

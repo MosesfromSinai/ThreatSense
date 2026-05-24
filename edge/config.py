@@ -1,6 +1,6 @@
 import os
 
-DEVICE_ID = "jetson-nano-01"
+DEVICE_ID = os.getenv("DEVICE_ID", "jetson-orin-01")
 CAMERA_ID = 0
 
 FOG_SERVER_URL = os.getenv("FOG_SERVER_URL", "http://127.0.0.1:5001/alert")

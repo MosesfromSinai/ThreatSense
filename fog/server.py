@@ -66,8 +66,11 @@ def receive_alert():
             400,
         )
 
-    alerts.append(alert)
-    log_alert(alert)
+    local_alert = alert.copy()
+    local_alert.pop("image_data", None)
+
+    alerts.append(local_alert)
+    log_alert(local_alert)
     forward_alert_to_cloud(alert)
     print(f"Alert received from {alert.get('device_id')}: {alert.get('threat_label')}")
 
