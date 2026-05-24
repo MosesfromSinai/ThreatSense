@@ -20,8 +20,9 @@ last_detection = None
 last_detection_time = 0
 last_alert_time = 0
 
+
 def open_camera(camera_id):
-    #opens webcam using correct operating system
+    # opens webcam using correct operating system
     system = platform.system()
 
     if system == "Windows":
@@ -30,6 +31,7 @@ def open_camera(camera_id):
         return cv2.VideoCapture(camera_id, cv2.CAP_AVFOUNDATION)
     else:
         return cv2.VideoCapture(camera_id)
+
 
 def main():
     global last_detection, last_detection_time, last_alert_time
@@ -95,7 +97,9 @@ def main():
                             f"Detected {detected_object} as {mock_threat_label} "
                             f"with confidence {confidence:.2f}"
                         )
-                        print(f"Next alert available in {ALERT_COOLDOWN_SECONDS} seconds")
+                        print(
+                            f"Next alert available in {ALERT_COOLDOWN_SECONDS} seconds"
+                        )
                         print("-" * 50)
 
                         send_alert_async(alert_payload)

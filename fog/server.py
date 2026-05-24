@@ -125,9 +125,7 @@ def list_devices():
 def dashboard():
     displayed_alert_count = min(len(alerts), 10)
 
-    active_devices = len(
-        {alert.get("device_id", "unknown") for alert in alerts}
-    )
+    active_devices = len({alert.get("device_id", "unknown") for alert in alerts})
 
     return render_template(
         "dashboard.html",
@@ -136,5 +134,7 @@ def dashboard():
         displayed_alert_count=displayed_alert_count,
         active_devices=active_devices,
     )
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5001)

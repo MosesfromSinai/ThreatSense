@@ -91,9 +91,7 @@ def save_alerts():
 def dashboard():
     displayed_alert_count = min(len(alerts), 10)
 
-    active_devices = len(
-        {alert.get("device_id", "unknown") for alert in alerts}
-    )
+    active_devices = len({alert.get("device_id", "unknown") for alert in alerts})
 
     return render_template(
         "dashboard.html",
@@ -102,6 +100,7 @@ def dashboard():
         displayed_alert_count=displayed_alert_count,
         active_devices=active_devices,
     )
+
 
 @app.route("/cloud-alert", methods=["POST"])
 def receive_cloud_alert():
@@ -112,10 +111,15 @@ def receive_cloud_alert():
 
     missing_fields = get_missing_fields(alert)
     if missing_fields:
-        return jsonify({
-            "error": "missing required alert fields",
-            "missing_fields": missing_fields,
-        }), 400
+        return (
+            jsonify(
+                {
+                    "error": "missing required alert fields",
+                    "missing_fields": missing_fields,
+                }
+            ),
+            400,
+        )
 
     alert = prepare_alert_for_review(alert)
     save_alert_image(alert)
@@ -128,18 +132,28 @@ def receive_cloud_alert():
 
 @app.route("/alerts", methods=["GET"])
 def list_alerts():
-    return jsonify({
-        "count": len(alerts),
-        "alerts": alerts,
-    }), 200
+    return (
+        jsonify(
+            {
+                "count": len(alerts),
+                "alerts": alerts,
+            }
+        ),
+        200,
+    )
 
 
 @app.route("/health", methods=["GET"])
 def health_check():
-    return jsonify({
-        "status": "running",
-        "alert_count": len(alerts),
-    }), 200
+    return (
+        jsonify(
+            {
+                "status": "running",
+                "alert_count": len(alerts),
+            }
+        ),
+        200,
+    )
 
 
 @app.route("/verify/<alert_id>", methods=["POST"])
