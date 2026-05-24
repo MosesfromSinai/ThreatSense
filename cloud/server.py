@@ -4,7 +4,7 @@ from datetime import datetime
 from html import escape
 from pathlib import Path
 
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, redirect, request, render_template
 
 app = Flask(__name__)
 ALERTS_FILE = Path("cloud/data/alerts.json")
@@ -165,7 +165,7 @@ def verify_alert(alert_id):
             alert["verified_at"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             alert["admin_note"] = request.form.get("admin_note", "")
             save_alerts()
-            return jsonify({"status": "updated", "alert_id": alert_id}), 200
+            return redirect("/")
 
     return jsonify({"error": "alert not found"}), 404
 
