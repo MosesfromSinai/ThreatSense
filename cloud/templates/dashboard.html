@@ -85,6 +85,7 @@
                             <th>Object</th>
                             <th>Threat Type</th>
                             <th>Confidence</th>
+                            <th>Frame</th>
                             <th>Status</th>
                             <th>Review</th>
                         </tr>
@@ -126,6 +127,14 @@
                                     </div>
                                 </td>
 
+                                <td>
+                                    {% if alert.image_url %}
+                                        <img class="alert-frame" src="{{ alert.image_url }}" alt="Alert frame">
+                                    {% else %}
+                                        No image
+                                    {% endif %}
+                                </td>
+
                                 <td>{{ (alert.verification_status or "pending").replace("_", " ").title() }}</td>
 
                                 <td>
@@ -143,7 +152,7 @@
 
                             <!-- Empty state -->
                             <tr>
-                                <td colspan="7" class="empty-state">
+                                <td colspan="8" class="empty-state">
                                     No cloud alerts received yet. Waiting for fog layer forwarding...
                                 </td>
                             </tr>
