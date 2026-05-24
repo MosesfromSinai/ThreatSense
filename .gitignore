@@ -2,6 +2,9 @@
 yolov8n.pt
 data/logs/*.jsonl
 cloud/data/*.jsonl
+cloud/data/*.json
+cloud/static/alerts/*.jpg
+cloud/static/alerts/*.jpeg
 __pycache__/
 .env
 *.pem
