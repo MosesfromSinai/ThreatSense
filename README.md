@@ -2,7 +2,7 @@
 
 ## Distributed Threat Detection and Classification System
 
-ThreatSense is a distributed proof-of-concept threat detection system designed for real-time object detection at the edge. The project demonstrates how devices such as a Jetson Nano can process live video locally, detect possible threats, and send alerts to a fog-layer device such as a laptop or lab computer.
+ThreatSense is a distributed proof-of-concept threat detection system designed for real-time object detection at the edge. The project demonstrates how devices such as a Jetson Orin Nano can process live video locally, detect possible threats, and send alerts to a fog-layer device such as a laptop or lab computer.
 
 For safety in our demo, we use fruits such as bananas and cucumbers as mock weapon-shaped objects instead of real weapons.
 
@@ -34,7 +34,7 @@ In a real emergency, response time is very important. ThreatSense is meant to de
 
 ## Technologies Used
 
-- Jetson Nano
+- Jetson Orin Nano
 - Camera module or USB webcam
 - Laptop or lab computer
 - Python
@@ -83,6 +83,14 @@ Run the edge detection camera loop:
 python edge/detect.py
 ```
 
+If the fog laptop IP changes, set the edge destination without editing code:
+
+```bash
+FOG_SERVER_URL=http://<fog-ip>:5001/alert python edge/detect.py
+```
+
+The edge device ID can also be changed with `DEVICE_ID=jetson-orin-02`.
+
 ## Fog Endpoints
 
 - `GET /` - simple browser dashboard
@@ -117,8 +125,8 @@ Edge devices send alerts to the fog server as JSON:
 
 ```json
 {
-  "alert_id": "jetson-nano-01-20260519-143000",
-  "device_id": "jetson-nano-01",
+  "alert_id": "jetson-orin-01-20260519-143000",
+  "device_id": "jetson-orin-01",
   "camera_id": 0,
   "timestamp": "2026-05-19 14:30:00",
   "object": "banana",
@@ -130,7 +138,7 @@ Edge devices send alerts to the fog server as JSON:
     "x2": 300,
     "y2": 300
   },
-  "image_filename": "jetson-nano-01-20260519-143000.jpg",
+  "image_filename": "jetson-orin-01-20260519-143000.jpg",
   "image_data": "base64-encoded-jpeg-data"
 }
 ```

@@ -1,4 +1,5 @@
 import base64
+import binascii
 import json
 from datetime import datetime
 from pathlib import Path
@@ -47,7 +48,7 @@ def save_alert_image(alert):
 
     try:
         image_bytes = base64.b64decode(image_data, validate=True)
-    except (ValueError, TypeError):
+    except (binascii.Error, ValueError, TypeError):
         alert["image_error"] = "invalid base64 image data"
         return
 

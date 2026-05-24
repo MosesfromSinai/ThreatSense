@@ -48,6 +48,21 @@ def build_alert_payload(detected_object, threat_label, confidence, box):
 
 
 def add_frame_image(alert_payload, frame):
+    frame = frame.copy()
+    bbox = alert_payload["bbox"]
+    x1, y1, x2, y2 = bbox["x1"], bbox["y1"], bbox["x2"], bbox["y2"]
+    label = f"{alert_payload['threat_label']}: {alert_payload['confidence']:.2f}"
+
+    cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+    cv2.putText(
+        frame,
+        label,
+        (x1, max(y1 - 10, 20)),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        0.6,
+        (0, 255, 0),
+        2,
+    )
     frame = resize_alert_frame(frame)
 
     success, encoded_frame = cv2.imencode(
