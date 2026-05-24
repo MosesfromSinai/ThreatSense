@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 from html import escape
 from pathlib import Path
 
@@ -126,6 +127,25 @@ def health_check():
         "status": "running",
         "alert_count": len(alerts),
     }), 200
+
+
+@app.route("/verify/<alert_id>", methods=["POST"])
+def verify_alert(alert_id):
+    verification_status = request.form.get("verification_status")
+
+    if verification_status not in {"credible", "not_credible"}:
+        return jsonify({"error": "invalid verification status"}), 400
+
+    for alert in alerts:
+        if alert.get("alert_id") == alert_id:
+            alert["verification_status"] = verification_status
+            alert["verified_by"] = "demo-admin"
+            alert["verified_at"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            alert["admin_note"] = request.form.get("admin_note", "")
+            save_alerts()
+            return jsonify({"status": "updated", "alert_id": alert_id}), 200
+
+    return jsonify({"error": "alert not found"}), 404
 
 
 if __name__ == "__main__":
