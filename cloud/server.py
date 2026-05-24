@@ -25,24 +25,21 @@ def load_logged_alerts():
     if not ALERTS_FILE.exists():
         return []
 
-    loaded_alerts = []
-    with ALERTS_FILE.open() as log_file:
-        for line in log_file:
-            try:
-                loaded_alerts.append(json.loads(line))
-            except json.JSONDecodeError:
-                pass
-    return loaded_alerts
+    with ALERTS_FILE.open() as alerts_file:
+        try:
+            return json.load(alerts_file)
+        except json.JSONDecodeError:
+            return []
 
 
 alerts = load_logged_alerts()
 
 
-def log_alert(alert):
+def save_alerts():
     ALERTS_FILE.parent.mkdir(parents=True, exist_ok=True)
 
-    with ALERTS_FILE.open("a") as log_file:
-        log_file.write(json.dumps(alert) + "\n")
+    with ALERTS_FILE.open("w") as alerts_file:
+        json.dump(alerts, alerts_file, indent=2)
 
 
 @app.route("/", methods=["GET"])
@@ -95,7 +92,7 @@ def receive_cloud_alert():
         }), 400
 
     alerts.append(alert)
-    log_alert(alert)
+    save_alerts()
     print(f"Cloud alert received from {alert.get('device_id')}")
 
     return jsonify({"status": "received"}), 200
