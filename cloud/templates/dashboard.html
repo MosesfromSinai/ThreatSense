@@ -85,6 +85,8 @@
                             <th>Object</th>
                             <th>Threat Type</th>
                             <th>Confidence</th>
+                            <th>Status</th>
+                            <th>Review</th>
                         </tr>
                     </thead>
 
@@ -124,6 +126,15 @@
                                     </div>
                                 </td>
 
+                                <td>{{ (alert.verification_status or "pending").replace("_", " ").title() }}</td>
+
+                                <td>
+                                    <form method="post" action="/verify/{{ alert.alert_id }}">
+                                        <button type="submit" name="verification_status" value="credible">Credible</button>
+                                        <button type="submit" name="verification_status" value="not_credible">Not Credible</button>
+                                    </form>
+                                </td>
+
                             </tr>
 
                             {% endfor %}
@@ -132,7 +143,7 @@
 
                             <!-- Empty state -->
                             <tr>
-                                <td colspan="5" class="empty-state">
+                                <td colspan="7" class="empty-state">
                                     No cloud alerts received yet. Waiting for fog layer forwarding...
                                 </td>
                             </tr>
