@@ -187,6 +187,15 @@ tr:hover {
     border-radius: 999px;
 }
 
+.alert-frame {
+    width: 120px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    background: #020617;
+}
+
 td form {
     display: flex;
     gap: 8px;
