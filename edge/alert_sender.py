@@ -1,6 +1,8 @@
+import base64
 from datetime import datetime
 from threading import Thread
 
+import cv2
 import requests
 
 from config import (
@@ -33,6 +35,21 @@ def build_alert_payload(detected_object, threat_label, confidence, box):
         },
         "image_filename": f"{alert_id}.jpg",
     }
+
+
+def add_frame_image(alert_payload, frame):
+    success, encoded_frame = cv2.imencode(
+        ".jpg",
+        frame,
+        [int(cv2.IMWRITE_JPEG_QUALITY), 60],
+    )
+
+    if not success:
+        print("Could not encode alert frame")
+        return alert_payload
+
+    alert_payload["image_data"] = base64.b64encode(encoded_frame).decode("utf-8")
+    return alert_payload
 
 
 def send_alert(alert_payload):
