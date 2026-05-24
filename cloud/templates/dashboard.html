@@ -143,6 +143,7 @@
 
                                 <td>
                                     <form method="post" action="/verify/{{ alert.alert_id }}">
+                                        <input type="text" name="admin_note" placeholder="Admin note">
                                         <button type="submit" name="verification_status" value="credible">Credible</button>
                                         <button type="submit" name="verification_status" value="not_credible">Not Credible</button>
                                     </form>
