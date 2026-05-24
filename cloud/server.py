@@ -46,11 +46,12 @@ def save_alert_image(alert):
     IMAGE_DIR.mkdir(parents=True, exist_ok=True)
 
     try:
-        (IMAGE_DIR / image_filename).write_bytes(base64.b64decode(image_data))
+        image_bytes = base64.b64decode(image_data, validate=True)
     except (ValueError, TypeError):
         alert["image_error"] = "invalid base64 image data"
         return
 
+    (IMAGE_DIR / image_filename).write_bytes(image_bytes)
     alert["image_filename"] = image_filename
     alert["image_url"] = f"/static/alerts/{image_filename}"
 
