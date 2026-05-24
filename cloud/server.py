@@ -93,6 +93,7 @@ def dashboard():
         total_alerts=len(alerts),
         displayed_alert_count=displayed_alert_count,
         active_devices=active_devices,
+        error=request.args.get("error"),
     )
 
 @app.route("/cloud-alert", methods=["POST"])
