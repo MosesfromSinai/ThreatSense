@@ -102,8 +102,14 @@ python cloud/server.py
 - Cloud dashboard: `http://52.53.150.132:5001`
 - Cloud alert endpoint: `http://52.53.150.132:5001/cloud-alert`
 - Cloud alerts API: `http://52.53.150.132:5001/alerts`
+- Cloud health check: `http://52.53.150.132:5001/health`
+- Cloud verification form: `POST /verify/<alert_id>`
 
 The EC2 security group must allow inbound TCP traffic on port `5001`.
+
+Cloud alerts are stored in `cloud/data/alerts.json`, and captured alert frames
+are stored in `cloud/static/alerts/`. The cloud dashboard lets the demo admin
+mark each alert as credible or not credible.
 
 ## Alert JSON Format
 
