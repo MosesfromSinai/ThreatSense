@@ -196,6 +196,31 @@ tr:hover {
     background: #020617;
 }
 
+.verification-status {
+    display: inline-block;
+    min-width: 96px;
+    padding: 7px 10px;
+    border-radius: 999px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.status-pending {
+    color: #fde68a;
+    background: rgba(180, 83, 9, 0.28);
+}
+
+.status-credible {
+    color: #bbf7d0;
+    background: rgba(21, 128, 61, 0.32);
+}
+
+.status-not_credible {
+    color: #fecaca;
+    background: rgba(185, 28, 28, 0.32);
+}
+
 td form {
     display: flex;
     gap: 8px;
