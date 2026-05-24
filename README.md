@@ -111,6 +111,7 @@ Edge devices send alerts to the fog server as JSON:
 
 ```json
 {
+  "alert_id": "jetson-nano-01-20260519-143000",
   "device_id": "jetson-nano-01",
   "camera_id": 0,
   "timestamp": "2026-05-19 14:30:00",
@@ -122,7 +123,9 @@ Edge devices send alerts to the fog server as JSON:
     "y1": 100,
     "x2": 300,
     "y2": 300
-  }
+  },
+  "image_filename": "jetson-nano-01-20260519-143000.jpg",
+  "image_data": "base64-encoded-jpeg-data"
 }
 ```
 
