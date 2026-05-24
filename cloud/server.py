@@ -9,6 +9,7 @@ from flask import Flask, jsonify, redirect, request, render_template
 app = Flask(__name__)
 ALERTS_FILE = Path("cloud/data/alerts.json")
 IMAGE_DIR = Path("cloud/static/alerts")
+ADMIN_CODE = "1234"
 REQUIRED_ALERT_FIELDS = [
     "device_id",
     "camera_id",
@@ -139,6 +140,10 @@ def verify_alert(alert_id):
 
     if verification_status not in {"credible", "not_credible"}:
         return jsonify({"error": "invalid verification status"}), 400
+
+    admin_code = request.form.get("admin_code")
+    if admin_code != ADMIN_CODE:
+        return jsonify({"error": "invalid admin code"}), 403
 
     for alert in alerts:
         if alert.get("alert_id") == alert_id:
