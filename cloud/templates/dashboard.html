@@ -135,7 +135,11 @@
                                     {% endif %}
                                 </td>
 
-                                <td>{{ (alert.verification_status or "pending").replace("_", " ").title() }}</td>
+                                <td>
+                                    <span class="verification-status status-{{ alert.verification_status or 'pending' }}">
+                                        {{ (alert.verification_status or "pending").replace("_", " ").title() }}
+                                    </span>
+                                </td>
 
                                 <td>
                                     <form method="post" action="/verify/{{ alert.alert_id }}">
