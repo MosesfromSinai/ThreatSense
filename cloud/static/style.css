@@ -226,6 +226,15 @@ td form {
     gap: 8px;
 }
 
+td input {
+    width: 130px;
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    border-radius: 8px;
+    padding: 8px 10px;
+    color: #e5e7eb;
+    background: rgba(15, 23, 42, 0.92);
+}
+
 td button {
     border: 0;
     border-radius: 8px;
