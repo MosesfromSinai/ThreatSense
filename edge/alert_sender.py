@@ -14,6 +14,16 @@ from config import (
 )
 
 
+def resize_alert_frame(frame, max_width=640):
+    height, width = frame.shape[:2]
+    if width <= max_width:
+        return frame
+
+    scale = max_width / width
+    new_size = (max_width, int(height * scale))
+    return cv2.resize(frame, new_size)
+
+
 def build_alert_payload(detected_object, threat_label, confidence, box):
     x1, y1, x2, y2 = [int(value) for value in box]
     timestamp = datetime.now()
@@ -38,6 +48,8 @@ def build_alert_payload(detected_object, threat_label, confidence, box):
 
 
 def add_frame_image(alert_payload, frame):
+    frame = resize_alert_frame(frame)
+
     success, encoded_frame = cv2.imencode(
         ".jpg",
         frame,
