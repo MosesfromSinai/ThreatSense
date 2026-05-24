@@ -31,6 +31,12 @@
             </div>
         </header>
 
+        {% if error == "invalid_admin_code" %}
+            <div class="error-banner">
+                Invalid admin code. Alert verification was not updated.
+            </div>
+        {% endif %}
+
         <!-- Statistics cards -->
         <section class="stats-grid">
 
