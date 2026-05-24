@@ -2,7 +2,7 @@ import json
 from html import escape
 from pathlib import Path
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 
 app = Flask(__name__)
 LOG_FILE = Path("cloud/data/alerts.jsonl")
@@ -47,6 +47,7 @@ def log_alert(alert):
 
 @app.route("/", methods=["GET"])
 def dashboard():
+    '''
     rows = []
     for alert in reversed(alerts[-10:]):
         timestamp = escape(str(alert.get("timestamp", "unknown")))
@@ -64,7 +65,20 @@ def dashboard():
     <p>Total cloud alerts: {len(alerts)}</p>
     <ul>{''.join(rows)}</ul>
     """
+    '''
+    displayed_alert_count = min(len(alerts), 10)
 
+    active_devices = len(
+        {alert.get("device_id", "unknown") for alert in alerts}
+    )
+
+    return render_template(
+        "dashboard.html",
+        alerts=list(reversed(alerts[-10:])),
+        total_alerts=len(alerts),
+        displayed_alert_count=displayed_alert_count,
+        active_devices=active_devices,
+    )
 
 @app.route("/cloud-alert", methods=["POST"])
 def receive_cloud_alert():
