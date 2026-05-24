@@ -1,7 +1,6 @@
 import base64
 import json
 from datetime import datetime
-from html import escape
 from pathlib import Path
 
 from flask import Flask, jsonify, redirect, request, render_template
@@ -79,25 +78,6 @@ def save_alerts():
 
 @app.route("/", methods=["GET"])
 def dashboard():
-    '''
-    rows = []
-    for alert in reversed(alerts[-10:]):
-        timestamp = escape(str(alert.get("timestamp", "unknown")))
-        device = escape(str(alert.get("device_id", "unknown")))
-        label = escape(str(alert.get("threat_label", "unknown")))
-        confidence = escape(str(alert.get("confidence", "unknown")))
-        rows.append(f"<li>{timestamp} - {device} - {label} ({confidence})</li>")
-
-    if not rows:
-        rows.append("<li>No cloud alerts received yet.</li>")
-
-    return f"""
-    <meta http-equiv="refresh" content="3">
-    <h1>ThreatSense Cloud Dashboard</h1>
-    <p>Total cloud alerts: {len(alerts)}</p>
-    <ul>{''.join(rows)}</ul>
-    """
-    '''
     displayed_alert_count = min(len(alerts), 10)
 
     active_devices = len(
