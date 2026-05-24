@@ -143,7 +143,7 @@ def verify_alert(alert_id):
 
     admin_code = request.form.get("admin_code")
     if admin_code != ADMIN_CODE:
-        return jsonify({"error": "invalid admin code"}), 403
+        return redirect("/?error=invalid_admin_code")
 
     for alert in alerts:
         if alert.get("alert_id") == alert_id:
