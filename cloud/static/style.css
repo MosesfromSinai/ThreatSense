@@ -112,6 +112,10 @@ body {
     padding: 24px;
 }
 
+.alerts-panel {
+    overflow-x: auto;
+}
+
 .panel-header {
     margin-bottom: 18px;
 }
@@ -181,6 +185,24 @@ tr:hover {
     height: 100%;
     background: linear-gradient(90deg, #38bdf8, #6366f1);
     border-radius: 999px;
+}
+
+td form {
+    display: flex;
+    gap: 8px;
+}
+
+td button {
+    border: 0;
+    border-radius: 8px;
+    padding: 8px 10px;
+    color: #f8fafc;
+    background: #15803d;
+    cursor: pointer;
+}
+
+td button:last-child {
+    background: #b91c1c;
 }
 
 .flow-step {
