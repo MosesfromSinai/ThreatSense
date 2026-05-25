@@ -122,7 +122,8 @@ mark each alert as credible or not credible.
 For the class demo, alert verification uses the admin code `1234`. This is only
 demo-level protection; real authentication would be future work. The cloud
 dashboard updates alerts with JavaScript polling instead of full-page refreshes
-so admin note and code inputs are not cleared while typing.
+so admin note and code inputs are not cleared while typing. WebSockets are a
+possible future improvement if the project needs faster live updates.
 
 ## Alert JSON Format
 

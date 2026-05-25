@@ -296,6 +296,38 @@
                 </tr>`;
         }
 
+        function collectDraftInputs() {
+            const drafts = {};
+            document.querySelectorAll("[data-alert-id]").forEach(function(row) {
+                const alertId = row.dataset.alertId;
+                const noteInput = row.querySelector("[name='admin_note']");
+                const codeInput = row.querySelector("[name='admin_code']");
+                drafts[alertId] = {
+                    admin_note: noteInput ? noteInput.value : "",
+                    admin_code: codeInput ? codeInput.value : "",
+                };
+            });
+            return drafts;
+        }
+
+        function restoreDraftInputs(drafts) {
+            Object.entries(drafts).forEach(function([alertId, values]) {
+                const row = document.getElementById(`alert-${alertId}`);
+                if (!row) {
+                    return;
+                }
+
+                const noteInput = row.querySelector("[name='admin_note']");
+                const codeInput = row.querySelector("[name='admin_code']");
+                if (noteInput) {
+                    noteInput.value = values.admin_note;
+                }
+                if (codeInput) {
+                    codeInput.value = values.admin_code;
+                }
+            });
+        }
+
         async function refreshAlerts() {
             let data;
             try {
@@ -322,6 +354,8 @@
                 return;
             }
 
+            const drafts = collectDraftInputs();
+
             if (recentAlerts.length === 0) {
                 alertList.innerHTML = `
                     <tr>
@@ -333,6 +367,7 @@
             }
 
             alertList.innerHTML = recentAlerts.map(renderAlert).join("");
+            restoreDraftInputs(drafts);
         }
 
         setInterval(refreshAlerts, 10000);
