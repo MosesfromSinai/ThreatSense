@@ -151,7 +151,7 @@ def verify_alert(alert_id):
     if verification_status not in {"credible", "not_credible"}:
         return jsonify({"error": "invalid verification status"}), 400
 
-    admin_code = request.form.get("admin_code")
+    admin_code = request.form.get("admin_code", "").strip()
     if admin_code != ADMIN_CODE:
         return redirect("/?error=invalid_admin_code")
 

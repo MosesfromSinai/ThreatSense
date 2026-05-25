@@ -280,6 +280,15 @@ td button {
         font-size: 30px;
     }
 
+    .stat-card h2 {
+        font-size: 32px;
+    }
+
+    .panel-header h2,
+    .side-panel h2 {
+        font-size: 22px;
+    }
+
     table,
     thead,
     tbody,
@@ -303,7 +312,7 @@ td button {
 
     td {
         display: grid;
-        grid-template-columns: 92px 1fr;
+        grid-template-columns: minmax(0, 92px) minmax(0, 1fr);
         gap: 12px;
         padding: 12px;
     }

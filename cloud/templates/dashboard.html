@@ -155,8 +155,8 @@
 
                                 <td data-label="Review">
                                     <form method="post" action="/verify/{{ alert.alert_id }}">
-                                        <input type="text" name="admin_note" placeholder="Admin note">
-                                        <input type="password" name="admin_code" placeholder="Code" maxlength="4" inputmode="numeric" required>
+                                        <input type="text" name="admin_note" placeholder="Admin note" aria-label="Admin note">
+                                        <input type="password" name="admin_code" placeholder="4-digit code" aria-label="Admin code" minlength="4" maxlength="4" pattern="[0-9]{4}" inputmode="numeric" autocomplete="one-time-code" required>
                                         <button type="submit" name="verification_status" value="credible">Credible</button>
                                         <button type="submit" name="verification_status" value="not_credible">Not Credible</button>
                                     </form>
@@ -287,8 +287,8 @@
                     </td>
                     <td data-label="Review">
                         <form method="post" action="/verify/${escapeHtml(alert.alert_id)}">
-                            <input type="text" name="admin_note" placeholder="Admin note">
-                            <input type="password" name="admin_code" placeholder="Code" maxlength="4" inputmode="numeric" required>
+                            <input type="text" name="admin_note" placeholder="Admin note" aria-label="Admin note">
+                            <input type="password" name="admin_code" placeholder="4-digit code" aria-label="Admin code" minlength="4" maxlength="4" pattern="[0-9]{4}" inputmode="numeric" autocomplete="one-time-code" required>
                             <button type="submit" name="verification_status" value="credible">Credible</button>
                             <button type="submit" name="verification_status" value="not_credible">Not Credible</button>
                         </form>
@@ -332,6 +332,9 @@
             let data;
             try {
                 const response = await fetch("/alerts");
+                if (!response.ok) {
+                    throw new Error(`Alert fetch failed with ${response.status}`);
+                }
                 data = await response.json();
             } catch (error) {
                 console.warn("Could not refresh cloud alerts", error);
