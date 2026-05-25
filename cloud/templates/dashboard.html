@@ -235,7 +235,7 @@
 
         <!-- Footer -->
         <p class="footer-note">
-            Cloud dashboard displays the latest forwarded alerts
+            Cloud dashboard checks for new alerts every 10 seconds without reloading
         </p>
 
     </div>
@@ -254,6 +254,88 @@
                 return letter.toUpperCase();
             });
         }
+
+        function renderAlert(alert) {
+            const status = alert.verification_status || "pending";
+            const confidence = Number(alert.confidence || 0);
+            const image = alert.image_url
+                ? `<img class="alert-frame" src="${escapeHtml(alert.image_url)}" alt="Alert frame">`
+                : "No image";
+            const verified = alert.verified_at
+                ? `<div class="verification-detail">${escapeHtml(alert.verified_by)} at ${escapeHtml(alert.verified_at)}</div>`
+                : "";
+            const note = alert.admin_note
+                ? `<div class="verification-detail">${escapeHtml(alert.admin_note)}</div>`
+                : "";
+
+            return `
+                <tr id="alert-${escapeHtml(alert.alert_id)}" data-alert-id="${escapeHtml(alert.alert_id)}">
+                    <td data-label="Timestamp">${escapeHtml(alert.timestamp)}</td>
+                    <td data-label="Device">${escapeHtml(alert.device_id)}</td>
+                    <td data-label="Object">${escapeHtml(alert.object)}</td>
+                    <td data-label="Threat Type"><span class="threat-badge">${formatTitle(alert.threat_label)}</span></td>
+                    <td data-label="Confidence">
+                        <div class="confidence">
+                            <span>${(confidence * 100).toFixed(1)}%</span>
+                            <div class="confidence-bar"><div style="width: ${confidence * 100}%;"></div></div>
+                        </div>
+                    </td>
+                    <td data-label="Frame">${image}</td>
+                    <td data-label="Status">
+                        <span class="verification-status status-${escapeHtml(status)}">${formatTitle(status)}</span>
+                        ${verified}${note}
+                    </td>
+                    <td data-label="Review">
+                        <form method="post" action="/verify/${escapeHtml(alert.alert_id)}">
+                            <input type="text" name="admin_note" placeholder="Admin note">
+                            <input type="password" name="admin_code" placeholder="Code" maxlength="4" inputmode="numeric" required>
+                            <button type="submit" name="verification_status" value="credible">Credible</button>
+                            <button type="submit" name="verification_status" value="not_credible">Not Credible</button>
+                        </form>
+                    </td>
+                </tr>`;
+        }
+
+        async function refreshAlerts() {
+            let data;
+            try {
+                const response = await fetch("/alerts");
+                data = await response.json();
+            } catch (error) {
+                console.warn("Could not refresh cloud alerts", error);
+                return;
+            }
+
+            const alerts = data.alerts || [];
+            const recentAlerts = alerts.slice(-10).reverse();
+            const activeDevices = new Set(alerts.map(function(alert) {
+                return alert.device_id || "unknown";
+            }));
+
+            document.getElementById("total-alerts").textContent = alerts.length;
+            document.getElementById("displayed-alerts").textContent = recentAlerts.length;
+            document.getElementById("active-devices").textContent = activeDevices.size;
+
+            const alertList = document.getElementById("alert-list");
+            const focusedAlert = document.activeElement.closest("[data-alert-id]");
+            if (focusedAlert) {
+                return;
+            }
+
+            if (recentAlerts.length === 0) {
+                alertList.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="empty-state">
+                            No cloud alerts received yet. Waiting for fog layer forwarding...
+                        </td>
+                    </tr>`;
+                return;
+            }
+
+            alertList.innerHTML = recentAlerts.map(renderAlert).join("");
+        }
+
+        setInterval(refreshAlerts, 10000);
     </script>
 </body>
 </html>
