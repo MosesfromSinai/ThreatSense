@@ -33,6 +33,7 @@ def prepare_alert_for_review(alert):
     alert.setdefault("verification_status", "pending")
     alert.setdefault("verified_by", None)
     alert.setdefault("verified_at", None)
+    alert.setdefault("email_status", "not_sent")
 
     return alert
 
