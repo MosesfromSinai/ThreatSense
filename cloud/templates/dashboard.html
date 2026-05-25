@@ -6,8 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Dashboard title -->
     <title>ThreatSense Cloud Dashboard</title>
-    <!-- Auto refresh every 10 seconds -->
-    <meta http-equiv="refresh" content="10">
     <!-- External stylesheet -->
     <link rel="stylesheet" href="/static/style.css">
 </head>
@@ -43,7 +41,7 @@
             <div class="stat-card">
                 <p>Total Cloud Alerts</p>
 
-                <h2>{{ total_alerts }}</h2>
+                <h2 id="total-alerts">{{ total_alerts }}</h2>
 
                 <span>All forwarded alerts received</span>
             </div>
@@ -51,7 +49,7 @@
             <div class="stat-card">
                 <p>Displayed Alerts</p>
 
-                <h2>{{ displayed_alert_count }}</h2>
+                <h2 id="displayed-alerts">{{ displayed_alert_count }}</h2>
 
                 <span>Latest cloud alerts shown</span>
             </div>
@@ -59,7 +57,7 @@
             <div class="stat-card">
                 <p>Reporting Devices</p>
 
-                <h2>{{ active_devices }}</h2>
+                <h2 id="active-devices">{{ active_devices }}</h2>
 
                 <span>Unique edge devices tracked</span>
             </div>
@@ -97,28 +95,28 @@
                         </tr>
                     </thead>
 
-                    <tbody>
+                    <tbody id="alert-list">
 
                         <!-- Render alerts dynamically -->
                         {% if alerts %}
 
                             {% for alert in alerts %}
 
-                            <tr>
+                            <tr id="alert-{{ alert.alert_id }}" data-alert-id="{{ alert.alert_id }}">
 
-                                <td>{{ alert.timestamp }}</td>
+                                <td data-label="Timestamp">{{ alert.timestamp }}</td>
 
-                                <td>{{ alert.device_id }}</td>
+                                <td data-label="Device">{{ alert.device_id }}</td>
 
-                                <td>{{ alert.object }}</td>
+                                <td data-label="Object">{{ alert.object }}</td>
 
-                                <td>
+                                <td data-label="Threat Type">
                                     <span class="threat-badge">
                                         {{ alert.threat_label.replace("_", " ").title() }}
                                     </span>
                                 </td>
 
-                                <td>
+                                <td data-label="Confidence">
                                     <div class="confidence">
 
                                         <span>
@@ -133,7 +131,7 @@
                                     </div>
                                 </td>
 
-                                <td>
+                                <td data-label="Frame">
                                     {% if alert.image_url %}
                                         <img class="alert-frame" src="{{ alert.image_url }}" alt="Alert frame">
                                     {% else %}
@@ -141,7 +139,7 @@
                                     {% endif %}
                                 </td>
 
-                                <td>
+                                <td data-label="Status">
                                     <span class="verification-status status-{{ alert.verification_status or 'pending' }}">
                                         {{ (alert.verification_status or "pending").replace("_", " ").title() }}
                                     </span>
@@ -155,7 +153,7 @@
                                     {% endif %}
                                 </td>
 
-                                <td>
+                                <td data-label="Review">
                                     <form method="post" action="/verify/{{ alert.alert_id }}">
                                         <input type="text" name="admin_note" placeholder="Admin note">
                                         <input type="password" name="admin_code" placeholder="Code" maxlength="4" inputmode="numeric" required>
@@ -237,9 +235,25 @@
 
         <!-- Footer -->
         <p class="footer-note">
-            Cloud dashboard auto-refreshes every 10 seconds
+            Cloud dashboard displays the latest forwarded alerts
         </p>
 
     </div>
+    <script>
+        function escapeHtml(value) {
+            return String(value ?? "")
+                .replaceAll("&", "&amp;")
+                .replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;")
+                .replaceAll('"', "&quot;")
+                .replaceAll("'", "&#039;");
+        }
+
+        function formatTitle(value) {
+            return escapeHtml(value).replaceAll("_", " ").replace(/\b\w/g, function(letter) {
+                return letter.toUpperCase();
+            });
+        }
+    </script>
 </body>
 </html>
