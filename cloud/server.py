@@ -222,6 +222,11 @@ def verify_alert(alert_id):
             alert["verification_status"] = verification_status
             alert["verified_by"] = "demo-admin"
             alert["verified_at"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            if (
+                verification_status == "credible"
+                and alert.get("email_status") != "sent"
+            ):
+                alert["email_status"] = send_demo_email(alert)
             save_alerts()
             return redirect("/")
 

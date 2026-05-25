@@ -148,6 +148,9 @@
                                             {{ alert.verified_by }} at {{ alert.verified_at }}
                                         </div>
                                     {% endif %}
+                                    <div class="verification-detail">
+                                        Email: {{ (alert.email_status or "not_sent").replace("_", " ").title() }}
+                                    </div>
                                 </td>
 
                                 <td data-label="Review">
@@ -260,6 +263,7 @@
             const verified = alert.verified_at
                 ? `<div class="verification-detail">${escapeHtml(alert.verified_by)} at ${escapeHtml(alert.verified_at)}</div>`
                 : "";
+            const emailStatus = alert.email_status || "not_sent";
 
             return `
                 <tr id="alert-${escapeHtml(alert.alert_id)}" data-alert-id="${escapeHtml(alert.alert_id)}">
@@ -277,6 +281,7 @@
                     <td data-label="Status">
                         <span class="verification-status status-${escapeHtml(status)}">${formatTitle(status)}</span>
                         ${verified}
+                        <div class="verification-detail">Email: ${formatTitle(emailStatus)}</div>
                     </td>
                     <td data-label="Review">
                         <form method="post" action="/verify/${escapeHtml(alert.alert_id)}">
