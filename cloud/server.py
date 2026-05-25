@@ -1,6 +1,7 @@
 import base64
 import binascii
 import json
+import os
 from datetime import datetime
 from pathlib import Path
 
@@ -10,6 +11,13 @@ app = Flask(__name__)
 ALERTS_FILE = Path("cloud/data/alerts.json")
 IMAGE_DIR = Path("cloud/static/alerts")
 ADMIN_CODE = "1234"
+SMTP_HOST = os.getenv("SMTP_HOST")
+SMTP_PORT = os.getenv("SMTP_PORT", "587")
+SMTP_USERNAME = os.getenv("SMTP_USERNAME")
+SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
+SMTP_FROM_EMAIL = os.getenv("SMTP_FROM_EMAIL")
+SMTP_USE_TLS = os.getenv("SMTP_USE_TLS", "true").lower() == "true"
+TEST_EMAIL_RECIPIENTS = ["mavil072@ucr.edu", "amaga084@ucr.edu"]
 REQUIRED_ALERT_FIELDS = [
     "device_id",
     "camera_id",
