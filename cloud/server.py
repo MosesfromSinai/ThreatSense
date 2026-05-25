@@ -10,7 +10,6 @@ app = Flask(__name__)
 ALERTS_FILE = Path("cloud/data/alerts.json")
 IMAGE_DIR = Path("cloud/static/alerts")
 ADMIN_CODE = "1234"
-MAX_ADMIN_NOTE_LENGTH = 120
 REQUIRED_ALERT_FIELDS = [
     "device_id",
     "camera_id",
@@ -34,7 +33,6 @@ def prepare_alert_for_review(alert):
     alert.setdefault("verification_status", "pending")
     alert.setdefault("verified_by", None)
     alert.setdefault("verified_at", None)
-    alert.setdefault("admin_note", "")
 
     return alert
 
@@ -161,7 +159,6 @@ def verify_alert(alert_id):
             alert["verification_status"] = verification_status
             alert["verified_by"] = "demo-admin"
             alert["verified_at"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            alert["admin_note"] = request.form.get("admin_note", "").strip()[:MAX_ADMIN_NOTE_LENGTH]
             save_alerts()
             return redirect("/")
 
