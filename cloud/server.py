@@ -2,7 +2,9 @@ import base64
 import binascii
 import json
 import os
+import smtplib
 from datetime import datetime
+from email.message import EmailMessage
 from pathlib import Path
 
 from flask import Flask, jsonify, redirect, request, render_template
@@ -19,6 +21,7 @@ SMTP_FROM_EMAIL = os.getenv("SMTP_FROM_EMAIL")
 SMTP_USE_TLS = os.getenv("SMTP_USE_TLS", "true").lower() == "true"
 TEST_EMAIL_RECIPIENTS = ["mavil072@ucr.edu", "amaga084@ucr.edu"]
 CLOUD_BASE_URL = "http://52.53.150.132:5001"
+EMAIL_SUBJECT = "[ThreatSense Demo] Verified Mock Threat Alert"
 REQUIRED_ALERT_FIELDS = [
     "device_id",
     "camera_id",
@@ -124,6 +127,27 @@ Captured alert frame:
 
 This is not an official UCR emergency notification.
 Do not treat this as a real emergency alert."""
+
+
+def send_demo_email(alert):
+    if not all([SMTP_HOST, SMTP_USERNAME, SMTP_PASSWORD, SMTP_FROM_EMAIL]):
+        return "not_configured"
+
+    message = EmailMessage()
+    message["Subject"] = EMAIL_SUBJECT
+    message["From"] = SMTP_FROM_EMAIL
+    message["To"] = ", ".join(TEST_EMAIL_RECIPIENTS)
+    message.set_content(build_demo_email_body(alert))
+
+    try:
+        with smtplib.SMTP(SMTP_HOST, int(SMTP_PORT), timeout=10) as smtp:
+            if SMTP_USE_TLS:
+                smtp.starttls()
+            smtp.login(SMTP_USERNAME, SMTP_PASSWORD)
+            smtp.send_message(message)
+        return "sent"
+    except Exception as error:
+        return f"failed: {str(error)[:80]}"
 
 
 @app.route("/", methods=["GET"])
