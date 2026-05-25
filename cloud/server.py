@@ -18,6 +18,7 @@ SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
 SMTP_FROM_EMAIL = os.getenv("SMTP_FROM_EMAIL")
 SMTP_USE_TLS = os.getenv("SMTP_USE_TLS", "true").lower() == "true"
 TEST_EMAIL_RECIPIENTS = ["mavil072@ucr.edu", "amaga084@ucr.edu"]
+CLOUD_BASE_URL = "http://52.53.150.132:5001"
 REQUIRED_ALERT_FIELDS = [
     "device_id",
     "camera_id",
@@ -94,6 +95,35 @@ def save_alerts():
 
     with ALERTS_FILE.open("w") as alerts_file:
         json.dump(alerts, alerts_file, indent=2)
+
+
+def build_demo_email_body(alert):
+    location = alert.get("location") or "Demo location not specified"
+    image_url = alert.get("image_url") or "No captured alert frame available"
+    if image_url.startswith("/"):
+        image_url = f"{CLOUD_BASE_URL}{image_url}"
+
+    return f"""This is a ThreatSense demo/test notification.
+
+A mock threat alert was verified as credible in the demo system.
+
+Location:
+{location}
+
+Alert details:
+- Alert ID: {alert.get("alert_id")}
+- Device: {alert.get("device_id")}
+- Camera: {alert.get("camera_id")}
+- Object: {alert.get("object")}
+- Threat Label: {alert.get("threat_label")}
+- Confidence: {alert.get("confidence")}
+- Timestamp: {alert.get("timestamp")}
+
+Captured alert frame:
+{image_url}
+
+This is not an official UCR emergency notification.
+Do not treat this as a real emergency alert."""
 
 
 @app.route("/", methods=["GET"])
