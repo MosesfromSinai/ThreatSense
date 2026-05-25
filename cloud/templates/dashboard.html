@@ -148,14 +148,10 @@
                                             {{ alert.verified_by }} at {{ alert.verified_at }}
                                         </div>
                                     {% endif %}
-                                    {% if alert.admin_note %}
-                                        <div class="verification-detail">{{ alert.admin_note }}</div>
-                                    {% endif %}
                                 </td>
 
                                 <td data-label="Review">
                                     <form method="post" action="/verify/{{ alert.alert_id }}">
-                                        <input type="text" name="admin_note" placeholder="Admin note" aria-label="Admin note" maxlength="120">
                                         <input type="password" name="admin_code" placeholder="4-digit code" aria-label="Admin code" minlength="4" maxlength="4" pattern="[0-9]{4}" inputmode="numeric" autocomplete="one-time-code" required>
                                         <button type="submit" name="verification_status" value="credible">Credible</button>
                                         <button type="submit" name="verification_status" value="not_credible">Not Credible</button>
@@ -264,9 +260,6 @@
             const verified = alert.verified_at
                 ? `<div class="verification-detail">${escapeHtml(alert.verified_by)} at ${escapeHtml(alert.verified_at)}</div>`
                 : "";
-            const note = alert.admin_note
-                ? `<div class="verification-detail">${escapeHtml(alert.admin_note)}</div>`
-                : "";
 
             return `
                 <tr id="alert-${escapeHtml(alert.alert_id)}" data-alert-id="${escapeHtml(alert.alert_id)}">
@@ -283,11 +276,10 @@
                     <td data-label="Frame">${image}</td>
                     <td data-label="Status">
                         <span class="verification-status status-${escapeHtml(status)}">${formatTitle(status)}</span>
-                        ${verified}${note}
+                        ${verified}
                     </td>
                     <td data-label="Review">
                         <form method="post" action="/verify/${escapeHtml(alert.alert_id)}">
-                            <input type="text" name="admin_note" placeholder="Admin note" aria-label="Admin note" maxlength="120">
                             <input type="password" name="admin_code" placeholder="4-digit code" aria-label="Admin code" minlength="4" maxlength="4" pattern="[0-9]{4}" inputmode="numeric" autocomplete="one-time-code" required>
                             <button type="submit" name="verification_status" value="credible">Credible</button>
                             <button type="submit" name="verification_status" value="not_credible">Not Credible</button>
@@ -300,10 +292,8 @@
             const drafts = {};
             document.querySelectorAll("[data-alert-id]").forEach(function(row) {
                 const alertId = row.dataset.alertId;
-                const noteInput = row.querySelector("[name='admin_note']");
                 const codeInput = row.querySelector("[name='admin_code']");
                 drafts[alertId] = {
-                    admin_note: noteInput ? noteInput.value : "",
                     admin_code: codeInput ? codeInput.value : "",
                 };
             });
@@ -317,11 +307,7 @@
                     return;
                 }
 
-                const noteInput = row.querySelector("[name='admin_note']");
                 const codeInput = row.querySelector("[name='admin_code']");
-                if (noteInput) {
-                    noteInput.value = values.admin_note;
-                }
                 if (codeInput) {
                     codeInput.value = values.admin_code;
                 }
