@@ -80,6 +80,7 @@
                             <th>Object</th>
                             <th>Threat Type</th>
                             <th>Confidence</th>
+                            <th>Merge</th>
                         </tr>
 
                     </thead>
@@ -120,6 +121,14 @@
 
                                 </td>
 
+                                <td>
+                                    {% if alert.merged_alert_count and alert.merged_alert_count > 1 %}
+                                        {{ alert.merged_alert_count }} devices
+                                    {% else %}
+                                        Single
+                                    {% endif %}
+                                </td>
+
                             </tr>
 
                             {% endfor %}
@@ -129,7 +138,7 @@
                             <!-- Empty dashboard state -->
                             <tr>
 
-                                <td colspan="5" class="empty-state">
+                                <td colspan="6" class="empty-state">
                                     No alerts yet. Waiting for edge devices...
                                 </td>
 

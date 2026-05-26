@@ -1,14 +1,39 @@
+import argparse
+
 import cv2
+
+from camera import open_camera
+from config import CAMERA_ID
 
 
 def main():
-    camera = cv2.VideoCapture(0, cv2.CAP_AVFOUNDATION)
+    parser = argparse.ArgumentParser(description="Test the ThreatSense camera feed.")
+    parser.add_argument(
+        "--once",
+        action="store_true",
+        help="Read one frame and exit without opening a preview window.",
+    )
+    args = parser.parse_args()
+
+    camera = open_camera(CAMERA_ID)
 
     if not camera.isOpened():
-        print("Error: could not open webcam")
+        print(f"Error: could not open webcam at CAMERA_ID={CAMERA_ID}")
         return
 
-    print("Webcam started. Press q to quit.")
+    if args.once:
+        ret, frame = camera.read()
+        camera.release()
+
+        if not ret:
+            print(f"Error: could not read frame from CAMERA_ID={CAMERA_ID}")
+            return
+
+        height, width = frame.shape[:2]
+        print(f"Camera OK at CAMERA_ID={CAMERA_ID}: {width}x{height}")
+        return
+
+    print(f"Webcam started at CAMERA_ID={CAMERA_ID}. Press q to quit.")
 
     while True:
         ret, frame = camera.read()
