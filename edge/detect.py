@@ -1,9 +1,9 @@
 import cv2
 import time
-import platform
 from ultralytics import YOLO
 
 from alert_sender import add_frame_image, build_alert_payload, send_alert_async
+from camera import open_camera
 from config import (
     ALERT_COOLDOWN_SECONDS,
     CAMERA_ID,
@@ -21,29 +21,18 @@ last_detection_time = 0
 last_alert_time = 0
 
 
-def open_camera(camera_id):
-    # opens webcam using correct operating system
-    system = platform.system()
-
-    if system == "Windows":
-        return cv2.VideoCapture(camera_id, cv2.CAP_DSHOW)
-    elif system == "Darwin":  # macOS
-        return cv2.VideoCapture(camera_id, cv2.CAP_AVFOUNDATION)
-    else:
-        return cv2.VideoCapture(camera_id)
-
-
 def main():
     global last_detection, last_detection_time, last_alert_time
 
     camera = open_camera(CAMERA_ID)
 
     if not camera.isOpened():
-        print("Error: could not open webcam")
+        print(f"Error: could not open webcam at CAMERA_ID={CAMERA_ID}")
         return
 
     print("ThreatSense YOLO detection started. Press q to quit.")
     print(f"Device ID: {DEVICE_ID}")
+    print(f"Camera ID: {CAMERA_ID}")
     print(f"Sending alerts to: {FOG_SERVER_URL}")
 
     while True:
