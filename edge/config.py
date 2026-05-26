@@ -15,5 +15,4 @@ MOCK_THREAT_CLASSES = {
     "banana": "mock_gun_threat",
     "carrot": "mock_knife_threat",
     "cucumber": "mock_knife_threat",
-    "scissors": "mock_knife_threat",
 }

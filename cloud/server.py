@@ -22,7 +22,6 @@ SMTP_USE_TLS = os.getenv("SMTP_USE_TLS", "true").lower() == "true"
 TEST_EMAIL_RECIPIENTS = ["mavil072@ucr.edu", "amaga084@ucr.edu"]
 CLOUD_BASE_URL = "http://52.53.150.132:5001"
 EMAIL_SUBJECT = "[ThreatSense Demo] Verified Mock Threat Alert"
-ALERT_MERGE_WINDOW_SECONDS = float(os.getenv("ALERT_MERGE_WINDOW_SECONDS", "3"))
 REQUIRED_ALERT_FIELDS = [
     "device_id",
     "camera_id",
@@ -38,78 +37,6 @@ def get_missing_fields(alert):
     return [field for field in REQUIRED_ALERT_FIELDS if field not in alert]
 
 
-def parse_alert_timestamp(alert):
-    try:
-        return datetime.strptime(alert["timestamp"], "%Y-%m-%d %H:%M:%S")
-    except (KeyError, TypeError, ValueError):
-        return None
-
-
-def get_alert_device_ids(alert):
-    device_ids = alert.get("device_ids")
-    if isinstance(device_ids, list):
-        return device_ids
-
-    device_id = alert.get("device_id")
-    if device_id:
-        return [device_id]
-
-    return []
-
-
-def is_merge_candidate(existing_alert, incoming_alert):
-    if existing_alert.get("object") != incoming_alert.get("object"):
-        return False
-
-    if existing_alert.get("threat_label") != incoming_alert.get("threat_label"):
-        return False
-
-    incoming_device = incoming_alert.get("device_id")
-    if not incoming_device or incoming_device in get_alert_device_ids(existing_alert):
-        return False
-
-    existing_timestamp = parse_alert_timestamp(existing_alert)
-    incoming_timestamp = parse_alert_timestamp(incoming_alert)
-    if not existing_timestamp or not incoming_timestamp:
-        return False
-
-    time_delta = abs((incoming_timestamp - existing_timestamp).total_seconds())
-    return time_delta <= ALERT_MERGE_WINDOW_SECONDS
-
-
-def merge_alert(existing_alert, incoming_alert):
-    device_ids = get_alert_device_ids(existing_alert)
-    incoming_device = incoming_alert.get("device_id")
-    if incoming_device and incoming_device not in device_ids:
-        device_ids.append(incoming_device)
-
-    existing_alert["device_ids"] = device_ids
-    existing_alert["device_id"] = ", ".join(device_ids)
-    existing_alert["merged_alert_count"] = len(device_ids)
-    existing_alert["merged_within_seconds"] = ALERT_MERGE_WINDOW_SECONDS
-
-    existing_confidence = float(existing_alert.get("confidence", 0))
-    incoming_confidence = float(incoming_alert.get("confidence", 0))
-
-    if incoming_confidence > existing_confidence:
-        existing_alert["confidence"] = incoming_confidence
-        existing_alert["camera_id"] = incoming_alert.get("camera_id")
-        existing_alert["bbox"] = incoming_alert.get("bbox")
-        existing_alert["image_filename"] = incoming_alert.get("image_filename")
-        existing_alert["image_url"] = incoming_alert.get("image_url")
-
-    return existing_alert
-
-
-def add_or_merge_alert(incoming_alert):
-    for existing_alert in reversed(alerts):
-        if is_merge_candidate(existing_alert, incoming_alert):
-            return merge_alert(existing_alert, incoming_alert), True
-
-    alerts.append(incoming_alert)
-    return incoming_alert, False
-
-
 def prepare_alert_for_review(alert):
     alert_id = f"{alert['device_id']}-{alert['timestamp']}"
     alert_id = alert_id.replace(" ", "-").replace(":", "").replace("/", "-")
@@ -119,7 +46,6 @@ def prepare_alert_for_review(alert):
     alert.setdefault("verified_by", None)
     alert.setdefault("verified_at", None)
     alert.setdefault("email_status", "not_sent")
-    alert.setdefault("merged_alert_count", 1)
 
     return alert
 
@@ -228,13 +154,7 @@ def send_demo_email(alert):
 def dashboard():
     displayed_alert_count = min(len(alerts), 10)
 
-    active_devices = len(
-        {
-            device_id
-            for alert in alerts
-            for device_id in get_alert_device_ids(alert) or ["unknown"]
-        }
-    )
+    active_devices = len({alert.get("device_id", "unknown") for alert in alerts})
 
     return render_template(
         "dashboard.html",
@@ -267,14 +187,9 @@ def receive_cloud_alert():
 
     alert = prepare_alert_for_review(alert)
     save_alert_image(alert)
-    dashboard_alert, was_merged = add_or_merge_alert(alert)
+    alerts.append(alert)
     save_alerts()
     print(f"Cloud alert received from {alert.get('device_id')}")
-    if was_merged:
-        print(
-            "Merged cloud alert into event with "
-            f"{dashboard_alert['merged_alert_count']} devices"
-        )
 
     return jsonify({"status": "received"}), 200
 

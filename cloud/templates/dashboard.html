@@ -89,7 +89,6 @@
                             <th>Object</th>
                             <th>Threat Type</th>
                             <th>Confidence</th>
-                            <th>Merge</th>
                             <th>Frame</th>
                             <th>Status</th>
                             <th>Review</th>
@@ -132,14 +131,6 @@
                                     </div>
                                 </td>
 
-                                <td data-label="Merge">
-                                    {% if alert.merged_alert_count and alert.merged_alert_count > 1 %}
-                                        {{ alert.merged_alert_count }} devices
-                                    {% else %}
-                                        Single
-                                    {% endif %}
-                                </td>
-
                                 <td data-label="Frame">
                                     {% if alert.image_url %}
                                         <img class="alert-frame" src="{{ alert.image_url }}" alt="Alert frame">
@@ -178,7 +169,7 @@
 
                             <!-- Empty state -->
                             <tr>
-                                <td colspan="9" class="empty-state">
+                                <td colspan="8" class="empty-state">
                                     No cloud alerts received yet. Waiting for fog layer forwarding...
                                 </td>
                             </tr>
@@ -286,7 +277,6 @@
                             <div class="confidence-bar"><div style="width: ${confidence * 100}%;"></div></div>
                         </div>
                     </td>
-                    <td data-label="Merge">${alert.merged_alert_count && alert.merged_alert_count > 1 ? `${alert.merged_alert_count} devices` : "Single"}</td>
                     <td data-label="Frame">${image}</td>
                     <td data-label="Status">
                         <span class="verification-status status-${escapeHtml(status)}">${formatTitle(status)}</span>
@@ -344,15 +334,9 @@
 
             const alerts = data.alerts || [];
             const recentAlerts = alerts.slice(-10).reverse();
-            const activeDevices = new Set();
-            alerts.forEach(function(alert) {
-                const deviceIds = Array.isArray(alert.device_ids) && alert.device_ids.length
-                    ? alert.device_ids
-                    : [alert.device_id || "unknown"];
-                deviceIds.forEach(function(deviceId) {
-                    activeDevices.add(deviceId);
-                });
-            });
+            const activeDevices = new Set(alerts.map(function(alert) {
+                return alert.device_id || "unknown";
+            }));
 
             document.getElementById("total-alerts").textContent = alerts.length;
             document.getElementById("displayed-alerts").textContent = recentAlerts.length;
@@ -369,7 +353,7 @@
             if (recentAlerts.length === 0) {
                 alertList.innerHTML = `
                     <tr>
-                        <td colspan="9" class="empty-state">
+                        <td colspan="8" class="empty-state">
                             No cloud alerts received yet. Waiting for fog layer forwarding...
                         </td>
                     </tr>`;
