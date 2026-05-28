@@ -100,7 +100,7 @@ body {
 
 .content-grid {
     display: grid;
-    grid-template-columns: 2.2fr 0.9fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 24px;
 }
 
@@ -123,6 +123,11 @@ body {
 
 .alerts-panel {
     overflow-x: auto;
+    width: 100%;
+}
+
+.side-panel {
+    display: none;
 }
 
 .panel-header {
@@ -141,7 +146,7 @@ body {
 
 table {
     width: 100%;
-    min-width: 980px;
+    min-width: 1120px;
     border-collapse: collapse;
 }
 
@@ -176,7 +181,7 @@ td[data-label="Threat Type"] {
 }
 
 td[data-label="Review"] {
-    min-width: 230px;
+    min-width: 260px;
 }
 
 .timestamp-value {
