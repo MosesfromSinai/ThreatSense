@@ -141,6 +141,7 @@ body {
 
 table {
     width: 100%;
+    min-width: 980px;
     border-collapse: collapse;
 }
 
@@ -156,7 +157,31 @@ th {
 td {
     padding: 16px 14px;
     border-bottom: 1px solid rgba(148, 163, 184, 0.12);
-    overflow-wrap: anywhere;
+    overflow-wrap: break-word;
+    word-break: normal;
+    vertical-align: top;
+}
+
+td[data-label="Timestamp"] {
+    min-width: 150px;
+}
+
+td[data-label="Object"] {
+    min-width: 90px;
+    white-space: nowrap;
+}
+
+td[data-label="Threat Type"] {
+    min-width: 160px;
+}
+
+td[data-label="Review"] {
+    min-width: 230px;
+}
+
+.timestamp-value {
+    white-space: nowrap;
+    line-height: 1.35;
 }
 
 tr:hover {
@@ -164,6 +189,7 @@ tr:hover {
 }
 
 .threat-badge {
+    display: inline-block;
     background: rgba(30, 64, 175, 0.45);
     color: #dbeafe;
     border: 1px solid rgba(147, 197, 253, 0.35);
@@ -171,6 +197,7 @@ tr:hover {
     border-radius: 999px;
     font-size: 13px;
     font-weight: bold;
+    white-space: nowrap;
 }
 
 .confidence {
@@ -243,6 +270,7 @@ td form {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
+    min-width: 220px;
 }
 
 td input {
@@ -302,6 +330,10 @@ td button {
         display: none;
     }
 
+    table {
+        min-width: 0;
+    }
+
     tr {
         margin-bottom: 16px;
         border: 1px solid rgba(148, 163, 184, 0.2);
@@ -333,7 +365,18 @@ td button {
     td form,
     td input,
     td button {
+        min-width: 0;
         width: 100%;
+    }
+
+    td[data-label="Review"] {
+        min-width: 0;
+    }
+
+    td[data-label="Object"],
+    .timestamp-value,
+    .threat-badge {
+        white-space: normal;
     }
 }
 
