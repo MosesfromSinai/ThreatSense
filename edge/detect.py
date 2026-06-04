@@ -34,6 +34,10 @@ def main():
     print("ThreatSense YOLO detection started. Press q to quit.")
     print(f"Device ID: {DEVICE_ID}")
     print(f"Camera ID: {CAMERA_ID}")
+    actual_width = int(camera.get(cv2.CAP_PROP_FRAME_WIDTH))
+    actual_height = int(camera.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    actual_fps = camera.get(cv2.CAP_PROP_FPS)
+    print(f"Camera stream: {actual_width}x{actual_height} at {actual_fps:.1f} FPS")
     print(f"Sending alerts to: {FOG_SERVER_URL}")
 
     process_every_n_frames = max(1, PROCESS_EVERY_N_FRAMES)
