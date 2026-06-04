@@ -1,5 +1,6 @@
 import cv2
 import time
+import torch
 from ultralytics import YOLO
 
 from alert_sender import add_frame_image, build_alert_payload, send_alert_async
@@ -16,6 +17,7 @@ from config import (
 )
 
 model = YOLO("yolov8n.pt")
+DETECTION_DEVICE = 0 if torch.cuda.is_available() else "cpu"
 
 last_detection = None
 last_detection_time = 0
@@ -38,6 +40,7 @@ def main():
     actual_height = int(camera.get(cv2.CAP_PROP_FRAME_HEIGHT))
     actual_fps = camera.get(cv2.CAP_PROP_FPS)
     print(f"Camera stream: {actual_width}x{actual_height} at {actual_fps:.1f} FPS")
+    print(f"Detection device: {DETECTION_DEVICE}")
     print(f"Sending alerts to: {FOG_SERVER_URL}")
 
     process_every_n_frames = max(1, PROCESS_EVERY_N_FRAMES)
@@ -56,7 +59,7 @@ def main():
         results = []
 
         if frame_count % process_every_n_frames == 0:
-            results = model(frame, verbose=False)
+            results = model(frame, device=DETECTION_DEVICE, verbose=False)
 
         detection_found = False
 
