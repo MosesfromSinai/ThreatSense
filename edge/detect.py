@@ -12,6 +12,7 @@ from config import (
     DEVICE_ID,
     FOG_SERVER_URL,
     MOCK_THREAT_CLASSES,
+    PROCESS_EVERY_N_FRAMES,
 )
 
 model = YOLO("yolov8n.pt")
@@ -35,6 +36,10 @@ def main():
     print(f"Camera ID: {CAMERA_ID}")
     print(f"Sending alerts to: {FOG_SERVER_URL}")
 
+    process_every_n_frames = max(1, PROCESS_EVERY_N_FRAMES)
+    frame_count = 0
+    print(f"Running YOLO every {process_every_n_frames} frame(s)")
+
     while True:
         ret, frame = camera.read()
 
@@ -42,8 +47,12 @@ def main():
             print("Error: could not read frame")
             break
 
-        results = model(frame, verbose=False)
         current_time = time.time()
+        frame_count += 1
+        results = []
+
+        if frame_count % process_every_n_frames == 0:
+            results = model(frame, verbose=False)
 
         detection_found = False
 
