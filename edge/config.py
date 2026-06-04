@@ -4,8 +4,10 @@ DEVICE_ID = os.getenv("DEVICE_ID", "jetson-orin-01")
 CAMERA_ID = int(os.getenv("CAMERA_ID", "0"))
 FRAME_WIDTH = int(os.getenv("FRAME_WIDTH", "640"))
 FRAME_HEIGHT = int(os.getenv("FRAME_HEIGHT", "480"))
-CAMERA_FPS = int(os.getenv("CAMERA_FPS", "30"))
-PROCESS_EVERY_N_FRAMES = int(os.getenv("PROCESS_EVERY_N_FRAMES", "2"))
+CAMERA_FPS = int(os.getenv("CAMERA_FPS", "15"))
+PROCESS_EVERY_N_FRAMES = int(os.getenv("PROCESS_EVERY_N_FRAMES", "5"))
+DISPLAY_ENABLED = os.getenv("DISPLAY_ENABLED", "true").lower() == "true"
+YOLO_IMGSZ = int(os.getenv("YOLO_IMGSZ", "320"))
 
 FOG_SERVER_URL = os.getenv("FOG_SERVER_URL", "http://127.0.0.1:5001/alert")
 
