@@ -12,7 +12,7 @@ from flask import Flask, jsonify, redirect, request, render_template
 app = Flask(__name__)
 ALERTS_FILE = Path("cloud/data/alerts.json")
 IMAGE_DIR = Path("cloud/static/alerts")
-ADMIN_CODE = "1234"
+VERIFICATION_CODE = os.getenv("THREATSENSE_VERIFICATION_CODE")
 SMTP_HOST = os.getenv("SMTP_HOST")
 SMTP_PORT = os.getenv("SMTP_PORT", "587")
 SMTP_USERNAME = os.getenv("SMTP_USERNAME")
@@ -20,7 +20,7 @@ SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
 SMTP_FROM_EMAIL = os.getenv("SMTP_FROM_EMAIL")
 SMTP_USE_TLS = os.getenv("SMTP_USE_TLS", "true").lower() == "true"
 TEST_EMAIL_RECIPIENTS = ["mavil072@ucr.edu", "amaga084@ucr.edu"]
-CLOUD_BASE_URL = "http://52.53.150.132:5001"
+CLOUD_BASE_URL = os.getenv("THREATSENSE_CLOUD_BASE_URL", "http://127.0.0.1:5001")
 EMAIL_SUBJECT = "[ThreatSense Demo] Verified Mock Threat Alert"
 REQUIRED_ALERT_FIELDS = [
     "device_id",
@@ -227,14 +227,17 @@ def verify_alert(alert_id):
     if verification_status not in {"credible", "not_credible"}:
         return jsonify({"error": "invalid verification status"}), 400
 
-    admin_code = request.form.get("admin_code", "").strip()
-    if admin_code != ADMIN_CODE:
-        return redirect("/?error=invalid_admin_code")
+    verification_code = request.form.get("verification_code", "").strip()
+    if not VERIFICATION_CODE:
+        return jsonify({"error": "THREATSENSE_VERIFICATION_CODE is not configured"}), 503
+
+    if verification_code != VERIFICATION_CODE:
+        return redirect("/?error=invalid_verification_code")
 
     for alert in alerts:
         if alert.get("alert_id") == alert_id:
             alert["verification_status"] = verification_status
-            alert["verified_by"] = "demo-admin"
+            alert["verified_by"] = "demo-reviewer"
             alert["verified_at"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             if (
                 verification_status == "credible"

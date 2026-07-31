@@ -29,9 +29,9 @@
             </div>
         </header>
 
-        {% if error == "invalid_admin_code" %}
+        {% if error == "invalid_verification_code" %}
             <div class="error-banner">
-                Invalid admin code. Alert verification was not updated.
+                Invalid verification code. Alert verification was not updated.
             </div>
         {% endif %}
 
@@ -159,7 +159,7 @@
 
                                 <td data-label="Review">
                                     <form method="post" action="/verify/{{ alert.alert_id }}">
-                                        <input type="password" name="admin_code" placeholder="4-digit code" aria-label="Admin code" minlength="4" maxlength="4" pattern="[0-9]{4}" inputmode="numeric" autocomplete="one-time-code" required>
+                                        <input type="password" name="verification_code" placeholder="4-digit code" aria-label="Verification code" minlength="4" maxlength="4" pattern="[0-9]{4}" inputmode="numeric" autocomplete="one-time-code" required>
                                         <button type="submit" name="verification_status" value="credible">Credible</button>
                                         <button type="submit" name="verification_status" value="not_credible">Not Credible</button>
                                     </form>
@@ -327,7 +327,7 @@
                     </td>
                     <td data-label="Review">
                         <form method="post" action="/verify/${escapeHtml(alert.alert_id)}">
-                            <input type="password" name="admin_code" placeholder="4-digit code" aria-label="Admin code" minlength="4" maxlength="4" pattern="[0-9]{4}" inputmode="numeric" autocomplete="one-time-code" required>
+                            <input type="password" name="verification_code" placeholder="4-digit code" aria-label="Verification code" minlength="4" maxlength="4" pattern="[0-9]{4}" inputmode="numeric" autocomplete="one-time-code" required>
                             <button type="submit" name="verification_status" value="credible">Credible</button>
                             <button type="submit" name="verification_status" value="not_credible">Not Credible</button>
                         </form>
@@ -339,9 +339,9 @@
             const drafts = {};
             document.querySelectorAll("[data-alert-id]").forEach(function(row) {
                 const alertId = row.dataset.alertId;
-                const codeInput = row.querySelector("[name='admin_code']");
+                const codeInput = row.querySelector("[name='verification_code']");
                 drafts[alertId] = {
-                    admin_code: codeInput ? codeInput.value : "",
+                    verification_code: codeInput ? codeInput.value : "",
                 };
             });
             return drafts;
@@ -354,9 +354,9 @@
                     return;
                 }
 
-                const codeInput = row.querySelector("[name='admin_code']");
+                const codeInput = row.querySelector("[name='verification_code']");
                 if (codeInput) {
-                    codeInput.value = values.admin_code;
+                    codeInput.value = values.verification_code;
                 }
             });
         }

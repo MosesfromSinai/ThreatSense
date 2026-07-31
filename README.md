@@ -51,6 +51,7 @@ In a real emergency, response time is very important. ThreatSense is meant to de
 - Alert generation with object type, confidence score, timestamp, and frame
 - Communication between edge and fog devices
 - Real-time alert display
+- Human-in-the-loop alert verification workflow
 - Detection logging for future analysis
 
 ## Project Goals
@@ -101,29 +102,39 @@ The edge device ID can also be changed with `DEVICE_ID=jetson-orin-02`.
 
 ## Cloud Demo
 
-The cloud layer runs as a Flask API on an AWS EC2 VM:
+The cloud layer runs as a Flask API and can be deployed on an AWS EC2 VM:
 
 ```bash
+export THREATSENSE_VERIFICATION_CODE=<demo-verification-code>
+export THREATSENSE_CLOUD_BASE_URL=http://<cloud-host>:5001
 python cloud/server.py
 ```
 
-- Cloud dashboard: `http://52.53.150.132:5001`
-- Cloud alert endpoint: `http://52.53.150.132:5001/cloud-alert`
-- Cloud alerts API: `http://52.53.150.132:5001/alerts`
-- Cloud health check: `http://52.53.150.132:5001/health`
+- Cloud dashboard: `http://<cloud-host>:5001`
+- Cloud alert endpoint: `http://<cloud-host>:5001/cloud-alert`
+- Cloud alerts API: `http://<cloud-host>:5001/alerts`
+- Cloud health check: `http://<cloud-host>:5001/health`
 - Cloud verification form: `POST /verify/<alert_id>`
 
 The EC2 security group must allow inbound TCP traffic on port `5001`.
 
+Set the fog layer cloud destination without editing code:
+
+```bash
+THREATSENSE_CLOUD_SERVER_URL=http://<cloud-host>:5001/cloud-alert python fog/server.py
+```
+
 Cloud alerts are stored in `cloud/data/alerts.json`, and captured alert frames
-are stored in `cloud/static/alerts/`. The cloud dashboard lets the demo admin
+are stored in `cloud/static/alerts/`. The cloud dashboard lets the demo reviewer
 mark each alert as credible or not credible.
 
-For the class demo, alert verification uses the admin code `1234`. This is only
-demo-level protection; real authentication would be future work. The cloud
-dashboard updates alerts with JavaScript polling instead of full-page refreshes
-so the admin code input is not cleared while typing. WebSockets are a possible
-future improvement if the project needs faster live updates.
+For the class demo, alert verification uses a demo verification code provided
+through the `THREATSENSE_VERIFICATION_CODE` environment variable. This is a
+human-in-the-loop verification workflow with demo-level protection; real
+authentication would be future work. The cloud dashboard updates alerts with
+JavaScript polling instead of full-page refreshes so the verification code input
+is not cleared while typing. WebSockets are a possible future improvement if the
+project needs faster live updates.
 
 When an alert is verified as credible, the cloud server can send a clearly
 labeled ThreatSense demo/test email to the two configured test recipients. Set

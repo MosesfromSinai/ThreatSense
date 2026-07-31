@@ -1,3 +1,8 @@
+import os
+
 CLOUD_FORWARDING_ENABLED = True
-CLOUD_SERVER_URL = "http://52.53.150.132:5001/cloud-alert"
+CLOUD_SERVER_URL = os.getenv(
+    "THREATSENSE_CLOUD_SERVER_URL",
+    "http://127.0.0.1:5001/cloud-alert",
+)
 CLOUD_REQUEST_TIMEOUT_SECONDS = 3
